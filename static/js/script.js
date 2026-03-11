@@ -1,17 +1,15 @@
 // services.js
 
-// ─── LEITURA DOS DADOS DO DOM ───
 function loadServicesFromDOM() {
   return Array.from(document.querySelectorAll('#servicesData .service-data')).map(el => ({
     categories: el.dataset.categories.split(','),
     title:      el.dataset.title,
     desc:       el.dataset.desc,
-    iconId:     el.dataset.iconId,
   }));
 }
 
 const allServices = loadServicesFromDOM();
-let currentTab = 'imoveis';
+let currentTab    = 'imoveis';
 
 const tabLabels = {
   todos:    'Todos os Serviços',
@@ -35,44 +33,49 @@ function renderServices(tab, query = '') {
     return matchTab && matchQuery;
   });
 
-  document.getElementById('tabTitle').textContent    = query ? `Resultados para "${query}"` : tabLabels[tab] || tab;
+  document.getElementById('tabTitle').textContent     = query ? `"${query}"` : (tabLabels[tab] || tab);
   document.getElementById('contentCount').textContent = `${filtered.length} serviço${filtered.length !== 1 ? 's' : ''}`;
 
   list.innerHTML = '';
 
   if (filtered.length === 0) {
-    list.innerHTML = `<p style="padding:40px 0;color:#6b7585;font-size:14px;">Nenhum serviço encontrado.</p>`;
+    list.innerHTML = '<p style="padding:32px 0;color:#6b7585;font-size:14px;">Nenhum serviço encontrado.</p>';
     return;
   }
 
   filtered.forEach((s, i) => {
     const card = document.createElement('a');
-    card.href = '#';
+    card.href      = '#';
     card.className = 'service-card';
-    card.dataset.title = s.title;
-    card.dataset.desc  = s.desc;
-
     card.innerHTML = `
       <span class="service-num">${String(i + 1).padStart(2, '0')}</span>
       <span class="service-title">${s.title}</span>
       <span class="service-arrow">→</span>
     `;
-
     card.addEventListener('click', e => {
       e.preventDefault();
-      openModal('service', s);
+      openServiceModal(s);
     });
-
     list.appendChild(card);
   });
 }
 
-// ─── TABS ───
+// ─── TABS DESKTOP ───
 function setTab(btn, tab) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   currentTab = tab;
-  document.getElementById('searchInput').value = '';
+  clearSearch();
+  renderServices(tab);
+}
+
+// ─── TABS MOBILE ───
+function setTabMobile(item, tab, label) {
+  document.querySelectorAll('.dropdown-item').forEach(i => i.classList.remove('active'));
+  item.classList.add('active');
+  document.getElementById('catDropdownLabel').textContent = label;
+  currentTab = tab;
+  clearSearch();
   renderServices(tab);
 }
 
@@ -81,36 +84,21 @@ function filterServices(query) {
   renderServices(query ? 'todos' : currentTab, query);
 }
 
-// ─── MODAL ───
-function showPanel(id) {
-  document.querySelectorAll('.modal-panel').forEach(p => p.hidden = true);
-  const panel = document.getElementById(`modal-${id}`);
-  if (panel) panel.hidden = false;
+function clearSearch() {
+  const d = document.getElementById('searchInput');
+  const m = document.getElementById('searchInputMobile');
+  if (d) d.value = '';
+  if (m) m.value = '';
 }
 
-function openModal(type, service = null) {
-  if (type === 'service' && service) {
-    document.getElementById('modal-service-title').textContent = service.title;
-    document.getElementById('modal-service-desc').textContent  = service.desc;
-    document.querySelectorAll('#modal-service input').forEach(i => i.value = '');
-    showPanel('service');
-  } else {
-    showPanel(type);
-  }
-  document.getElementById('modalOverlay').classList.add('open');
+// ─── MODAL SERVIÇO ───
+function openServiceModal(service) {
+  document.getElementById('modalServiceTitle').textContent = service.title;
+  document.getElementById('modalServiceDesc').textContent  = service.desc;
+  document.querySelectorAll('#modalService input').forEach(i => i.value = '');
+  const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('modalService'));
+  modal.show();
 }
-
-function closeModal() {
-  document.getElementById('modalOverlay').classList.remove('open');
-}
-
-function closeModalOutside(e) {
-  if (e.target === document.getElementById('modalOverlay')) closeModal();
-}
-
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeModal();
-});
 
 // ─── INIT ───
 renderServices('imoveis');
