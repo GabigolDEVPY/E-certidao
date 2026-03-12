@@ -19,6 +19,17 @@ body {
   color: var(--ink);
 }
 
+/* Empurra info-strip e footer para baixo */
+main.main-area {
+  flex: 1 1 auto;
+  min-height: calc(100vh - var(--header-h) - var(--nav-h) - 260px);
+}
+
+.main-content {
+  padding-top: 40px;
+  padding-bottom: 80px;
+}
+
 /* ─── HEADER ─── */
 .site-header {
   background: var(--ink);
@@ -170,31 +181,70 @@ body {
 .dropdown-item:hover, .dropdown-item:focus { background: var(--accent-dim); color: var(--accent); }
 .dropdown-item.active { background: var(--accent-dim); color: var(--accent); font-weight: 600; }
 
-/* ─── SIDEBAR ─── */
-.sidebar {
-  position: sticky;
-  top: calc(var(--header-h) + var(--nav-h) + 24px);
-  display: flex; flex-direction: column; gap: 28px;
+/* ─── INFO STRIP (ex-sidebar, agora horizontal antes do footer) ─── */
+.info-strip {
+  background: var(--ink);
+  border-top: 3px solid var(--accent);
 }
 
-.sidebar-block { padding-top: 14px; border-top: 1px solid var(--rule); }
-
-.sidebar-eyebrow {
-  font-size: 10px; font-weight: 600; letter-spacing: 1.2px;
-  text-transform: uppercase; color: var(--accent); margin-bottom: 8px;
+.info-strip-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0;
 }
 
-.sidebar-text { font-size: 13px; color: var(--ink-light); line-height: 1.7; }
+.info-block {
+  padding: 32px 36px;
+  border-right: 1px solid rgba(255,255,255,.08);
+}
+.info-block:last-child { border-right: none; }
+
+.info-eyebrow {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.info-text {
+  font-size: 13px;
+  color: rgba(255,255,255,.55);
+  line-height: 1.6;
+  margin: 0;
+}
 
 .help-btn {
-  display: block; width: 100%;
-  padding: 11px 14px;
-  background: var(--accent-dim); border: 1px solid rgba(200,75,47,.3); border-radius: 3px;
-  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
-  color: var(--accent); cursor: pointer; text-align: left;
-  transition: background .2s, border-color .2s;
+  display: inline-block;
+  margin-top: 2px;
+  padding: 10px 18px;
+  background: var(--accent);
+  border: none;
+  border-radius: 3px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+  cursor: pointer;
+  transition: background .2s, transform .15s;
 }
-.help-btn:hover { background: #eadbd7; border-color: var(--accent); }
+.help-btn:hover {
+  background: #a83a22;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 767.98px) {
+  .info-strip-inner {
+    grid-template-columns: 1fr;
+  }
+  .info-block {
+    padding: 20px 20px;
+    border-right: none;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+  .info-block:last-child { border-bottom: none; }
+}
 
 /* ─── CONTENT ─── */
 .content-header {
@@ -302,40 +352,11 @@ body {
   .site-modal { border-radius: 0; padding: 28px 20px 24px; max-height: 90vh; overflow-y: auto; }
 }
 
-/* ─── FOOTER ─── */
-.footer {
-  background: #1a2233;
-  padding: 44px 20px 32px;
-  text-align: center;
-  margin-top: auto;
-}
-.payment-title {
-  color: rgba(255,255,255,.4); font-size: 11px;
-  letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 20px;
-}
-.payment-icons {
-  display: flex; justify-content: center; flex-wrap: wrap;
-  gap: 8px; margin-bottom: 32px;
-}
-.icon {
-  background: rgba(255,255,255,.07); border-radius: 3px;
-  padding: 5px 10px; display: flex; align-items: center;
-  justify-content: center; height: 32px;
-}
-.icon img { height: 16px; filter: brightness(0) invert(1) opacity(.5); }
-.icon svg { height: 16px; }
-.footer-links { color: rgba(255,255,255,.3); font-size: 12px; line-height: 2; }
-.footer-links a {
-  color: rgba(255,255,255,.35); text-decoration: none;
-  margin: 0 6px; transition: color .2s;
-}
-.footer-links a:hover { color: rgba(255,255,255,.75); }
 
 /* ─── MOBILE AJUSTES ─── */
 @media (max-width: 767.98px) {
   .service-card:hover { margin: 0; padding-left: 0; padding-right: 0; }
   .service-arrow { opacity: 1; }
   .content-header h1 { font-size: 22px; }
-  .sidebar { position: static; }
   .nav-cats { top: var(--header-h); }
 }

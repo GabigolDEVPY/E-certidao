@@ -18,9 +18,7 @@ const tabLabels = {
   imoveis:  'Imóveis',
   notas:    'Notas',
   protesto: 'Protesto',
-  federais: 'Federais / Estaduais',
   pesquisa: 'Pesquisa',
-  traducao: 'Tradução / Apostilamento',
 };
 
 // ─── RENDER ───

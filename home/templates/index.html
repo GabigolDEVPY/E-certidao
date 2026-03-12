@@ -11,7 +11,7 @@
       <a href="#" class="logo">
         <div class="logo-mark">D</div>
         <div class="logo-text">
-          <strong>Documento<em>no Brasil</em></strong>
+          <strong>E-<em>Certidão</em></strong>
           <small class="d-none d-sm-block">Serviço privado de documentos</small>
         </div>
       </a>
@@ -90,42 +90,44 @@
 </nav>
 
 <!-- ═══ MAIN ═══ -->
-<main class="flex-grow-1">
-  <div class="container-xl py-4 py-md-5">
-    <div class="row g-4 align-items-start">
+<main class="main-area">
+  <div class="container-xl main-content">
 
-      <!-- Sidebar -->
-      <aside class="col-12 col-md-3">
-        <div class="sidebar">
-          <div class="sidebar-block d-none d-md-block">
-            <p class="sidebar-eyebrow">Sobre o serviço</p>
-            <p class="sidebar-text">Facilitamos a busca e entrega de documentos em todo o território nacional, de forma ágil e segura.</p>
-          </div>
-          <div class="sidebar-block d-none d-md-block">
-            <p class="sidebar-eyebrow">Atendimento</p>
-            <p class="sidebar-text">Seg – Sex<br>08h às 18h</p>
-          </div>
-          <div class="sidebar-block">
-            <p class="sidebar-eyebrow d-none d-md-block">Precisa de ajuda?</p>
-            <button class="help-btn" data-bs-toggle="modal" data-bs-target="#modalHelp">
-              Não sei qual documento preciso →
-            </button>
-          </div>
-        </div>
-      </aside>
+    <!-- Conteúdo: largura total -->
+    <div class="content-header">
+      <h1 id="tabTitle">Imóveis</h1>
+      <span class="content-count" id="contentCount"></span>
+    </div>
+    <div class="service-list" id="serviceList"></div>
 
-      <!-- Conteúdo -->
-      <div class="col-12 col-md-9">
-        <div class="content-header">
-          <h1 id="tabTitle">Imóveis</h1>
-          <span class="content-count" id="contentCount"></span>
-        </div>
-        <div class="service-list" id="serviceList"></div>
+  </div>
+</main>
+
+<!-- ═══ INFO STRIP (antigo sidebar) ═══ -->
+<section class="info-strip">
+  <div class="container-xl">
+    <div class="info-strip-inner">
+
+      <div class="info-block">
+        <p class="info-eyebrow">Sobre o serviço</p>
+        <p class="info-text">Facilitamos a busca e entrega de documentos em todo o território nacional, de forma ágil e segura.</p>
+      </div>
+
+      <div class="info-block">
+        <p class="info-eyebrow">Atendimento</p>
+        <p class="info-text">Seg – Sex &nbsp;·&nbsp; 08h às 18h</p>
+      </div>
+
+      <div class="info-block info-block--cta">
+        <p class="info-eyebrow">Precisa de ajuda?</p>
+        <button class="help-btn" data-bs-toggle="modal" data-bs-target="#modalHelp">
+          Não sei qual documento preciso →
+        </button>
       </div>
 
     </div>
   </div>
-</main>
+</section>
 
 <!-- ═══ FOOTER ═══ -->
 {% include 'footer.html' %}
