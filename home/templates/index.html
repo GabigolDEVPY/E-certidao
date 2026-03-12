@@ -132,19 +132,50 @@
 
 <!-- ═══ DADOS DOS SERVIÇOS ═══ -->
 <div id="servicesData" hidden>
-  <div class="service-data" data-categories="todos,imoveis"          data-title="Certidão de Imóvel"                  data-desc="Obtenha a certidão de matrícula de qualquer imóvel no Brasil."></div>
-  <div class="service-data" data-categories="todos,imoveis"          data-title="Certidão de Penhor de Safra"          data-desc="Certidão relacionada ao penhor agrícola e de safra."></div>
-  <div class="service-data" data-categories="todos,imoveis,pesquisa" data-title="Pesquisa de Bens"                    data-desc="Pesquise bens imóveis de uma pessoa física ou jurídica."></div>
-  <div class="service-data" data-categories="todos,imoveis,federais" data-title="Monitoramento de CPF / CNPJ"         data-desc="Monitore alterações em registros de CPF ou CNPJ."></div>
-  <div class="service-data" data-categories="todos,imoveis"          data-title="Pacote de Certidões | Compra e Venda" data-desc="Pacote completo de certidões para transações imobiliárias."></div>
-  <div class="service-data" data-categories="todos,registro"         data-title="Certidão de Nascimento"               data-desc="Segunda via da certidão de nascimento em qualquer cartório."></div>
-  <div class="service-data" data-categories="todos,registro"         data-title="Certidão de Casamento"                data-desc="Obtenha a certidão de casamento com facilidade."></div>
-  <div class="service-data" data-categories="todos,notas"            data-title="Escritura Pública"                    data-desc="Solicite escrituras públicas de qualquer tipo."></div>
-  <div class="service-data" data-categories="todos,protesto"         data-title="Certidão de Protesto"                 data-desc="Verifique protestos em nome de pessoa física ou jurídica."></div>
-  <div class="service-data" data-categories="todos,federais"         data-title="Certidão da Receita Federal"          data-desc="Certidões de regularidade fiscal perante a Receita Federal."></div>
-  <div class="service-data" data-categories="todos,traducao"         data-title="Tradução Juramentada"                 data-desc="Tradução oficial por tradutores juramentados."></div>
-  <div class="service-data" data-categories="todos,traducao"         data-title="Apostilamento de Haia"                data-desc="Apostile documentos para países signatários da Convenção de Haia."></div>
+  <div class="service-data" data-categories="todos,imoveis"          data-icon-id="icon-house"   data-title="Certidão de Imóvel"                  data-desc="Obtenha a certidão de matrícula de qualquer imóvel no Brasil."></div>
+  <div class="service-data" data-categories="todos,imoveis"          data-icon-id="icon-house"   data-title="Certidão de Penhor de Safra"          data-desc="Certidão relacionada ao penhor agrícola e de safra."></div>
+  <div class="service-data" data-categories="todos,imoveis,pesquisa" data-icon-id="icon-search"  data-title="Pesquisa de Bens"                    data-desc="Pesquise bens imóveis de uma pessoa física ou jurídica."></div>
+  <div class="service-data" data-categories="todos,imoveis,federais" data-icon-id="icon-shield"  data-title="Monitoramento de CPF / CNPJ"         data-desc="Monitore alterações em registros de CPF ou CNPJ."></div>
+  <div class="service-data" data-categories="todos,imoveis"          data-icon-id="icon-doc"     data-title="Pacote de Certidões | Compra e Venda" data-desc="Pacote completo de certidões para transações imobiliárias."></div>
+  <div class="service-data" data-categories="todos,registro"         data-icon-id="icon-table"   data-title="Certidão de Nascimento"               data-desc="Segunda via da certidão de nascimento em qualquer cartório."></div>
+  <div class="service-data" data-categories="todos,registro"         data-icon-id="icon-check"   data-title="Certidão de Casamento"                data-desc="Obtenha a certidão de casamento com facilidade."></div>
+  <div class="service-data" data-categories="todos,notas"            data-icon-id="icon-file"    data-title="Escritura Pública"                    data-desc="Solicite escrituras públicas de qualquer tipo."></div>
+  <div class="service-data" data-categories="todos,protesto"         data-icon-id="icon-star"    data-title="Certidão de Protesto"                 data-desc="Verifique protestos em nome de pessoa física ou jurídica."></div>
+  <div class="service-data" data-categories="todos,federais"         data-icon-id="icon-shield"  data-title="Certidão da Receita Federal"          data-desc="Certidões de regularidade fiscal perante a Receita Federal."></div>
+  <div class="service-data" data-categories="todos,traducao"         data-icon-id="icon-monitor" data-title="Tradução Juramentada"                 data-desc="Tradução oficial por tradutores juramentados."></div>
+  <div class="service-data" data-categories="todos,traducao"         data-icon-id="icon-monitor" data-title="Apostilamento de Haia"                data-desc="Apostile documentos para países signatários da Convenção de Haia."></div>
 </div>
+
+<!-- ═══ SVG SPRITES ═══ -->
+<svg hidden xmlns="http://www.w3.org/2000/svg">
+  <symbol id="icon-house" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><polyline points="9 22 9 12 15 12 15 22"/>
+  </symbol>
+  <symbol id="icon-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+  </symbol>
+  <symbol id="icon-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+  </symbol>
+  <symbol id="icon-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+  </symbol>
+  <symbol id="icon-table" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/>
+  </symbol>
+  <symbol id="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12l2 2 4-4"/>
+  </symbol>
+  <symbol id="icon-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+  </symbol>
+  <symbol id="icon-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+  </symbol>
+  <symbol id="icon-monitor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+  </symbol>
+</svg>
 
 <!-- ═══ MODAIS BOOTSTRAP ═══ -->
 

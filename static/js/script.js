@@ -5,6 +5,7 @@ function loadServicesFromDOM() {
     categories: el.dataset.categories.split(','),
     title:      el.dataset.title,
     desc:       el.dataset.desc,
+    iconId:     el.dataset.iconId,
   }));
 }
 
@@ -48,7 +49,9 @@ function renderServices(tab, query = '') {
     card.href      = '#';
     card.className = 'service-card';
     card.innerHTML = `
-      <span class="service-num">${String(i + 1).padStart(2, '0')}</span>
+      <div class="service-icon">
+        <svg width="20" height="20"><use href="#${s.iconId}"/></svg>
+      </div>
       <span class="service-title">${s.title}</span>
       <span class="service-arrow">→</span>
     `;
