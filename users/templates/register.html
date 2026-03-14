@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'styles.css' %}">
+<!-- ═══ HEADER ═══ -->
+<header class="site-header sticky-top">
+  <div class="container-xl">
+    <div class="header-inner">
+
+      <!-- Logo -->
+      <a href="/" class="logo">
+        <div class="logo-mark">D</div>
+        <div class="logo-text">
+          <strong>E-<em>Certidão</em></strong>
+          <small class="d-none d-sm-block">Serviço privado de documentos</small>
+        </div>
+      </a>
+
+      <div class="header-actions ms-auto">
+        <a href="/" class="client-btn" style="text-decoration:none;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          <span class="d-none d-sm-inline">Voltar ao início</span>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</header>
+
+<!-- ═══ REGISTER AREA ═══ -->
+<main class="register-main">
+  <div class="register-grid">
+
+    <!-- Coluna esquerda: branding -->
+    <div class="register-brand">
+      <div class="brand-inner">
+        <div class="brand-tag">Cadastro</div>
+        <h1 class="brand-headline">Crie sua<br><em>conta</em></h1>
+        <p class="brand-sub">Acompanhe seus pedidos, acesse seu histórico e solicite documentos com mais agilidade.</p>
+
+        <div class="brand-steps">
+          <div class="step">
+            <div class="step-num">01</div>
+            <div class="step-text">Preencha o formulário ao lado</div>
+          </div>
+          <div class="step">
+            <div class="step-num">02</div>
+            <div class="step-text">Confirme seu e-mail</div>
+          </div>
+          <div class="step">
+            <div class="step-num">03</div>
+            <div class="step-text">Acesse sua área do cliente</div>
+          </div>
+        </div>
+
+        <div class="brand-divider"></div>
+        <p class="brand-login-hint">Já tem uma conta? <a href="{% url 'login' %}">Entrar</a></p>
+      </div>
+
+      <!-- decorative grain overlay -->
+      <div class="brand-grain" aria-hidden="true"></div>
+    </div>
+
+    <!-- Coluna direita: formulário -->
+    <div class="register-form-col">
+      <div class="form-card">
+
+        <div class="form-card-header">
+          <span class="form-tag">Novo cadastro</span>
+          <h2 class="form-title">Crie sua conta</h2>
+          <p class="form-subtitle">Preencha os dados abaixo para começar.</p>
+        </div>
+
+        {% if form.errors %}
+        <div class="form-errors">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>Corrija os campos destacados abaixo.</span>
+        </div>
+        {% endif %}
+
+        <form method="POST" class="reg-form" novalidate>
+          {% csrf_token %}
+
+          <!-- Username -->
+          <div class="field-group {% if form.username.errors %}field--error{% endif %}">
+            <label class="field-label" for="{{ form.username.id_for_label }}">
+              Nome de usuário
+            </label>
+            <div class="field-input-wrap">
+              <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <input
+                type="text"
+                id="{{ form.username.id_for_label }}"
+                name="{{ form.username.html_name }}"
+                value="{{ form.username.value|default:'' }}"
+                placeholder="ex: joaosilva"
+                autocomplete="username"
+                class="field-input"
+              >
+            </div>
+            {% if form.username.errors %}
+            <p class="field-error-msg">{{ form.username.errors|join:", " }}</p>
+            {% endif %}
+          </div>
+
+          <!-- E-mail -->
+          <div class="field-group {% if form.email.errors %}field--error{% endif %}">
+            <label class="field-label" for="{{ form.email.id_for_label }}">
+              E-mail
+            </label>
+            <div class="field-input-wrap">
+              <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              <input
+                type="email"
+                id="{{ form.email.id_for_label }}"
+                name="{{ form.email.html_name }}"
+                value="{{ form.email.value|default:'' }}"
+                placeholder="seu@email.com"
+                autocomplete="email"
+                class="field-input"
+              >
+            </div>
+            {% if form.email.errors %}
+            <p class="field-error-msg">{{ form.email.errors|join:", " }}</p>
+            {% endif %}
+          </div>
+
+          <!-- CPF / CNPJ + Telefone lado a lado -->
+          <div class="field-row">
+
+            <div class="field-group {% if form.cpf_cnpj.errors %}field--error{% endif %}">
+              <label class="field-label" for="{{ form.cpf_cnpj.id_for_label }}">
+                CPF / CNPJ
+              </label>
+              <div class="field-input-wrap">
+                <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="7" y1="9" x2="17" y2="9"/><line x1="7" y1="13" x2="13" y2="13"/></svg>
+                <input
+                  type="text"
+                  id="{{ form.cpf_cnpj.id_for_label }}"
+                  name="{{ form.cpf_cnpj.html_name }}"
+                  value="{{ form.cpf_cnpj.value|default:'' }}"
+                  placeholder="000.000.000-00"
+                  class="field-input"
+                  inputmode="numeric"
+                >
+              </div>
+              {% if form.cpf_cnpj.errors %}
+              <p class="field-error-msg">{{ form.cpf_cnpj.errors|join:", " }}</p>
+              {% endif %}
+            </div>
+
+            <div class="field-group {% if form.telefone.errors %}field--error{% endif %}">
+              <label class="field-label" for="{{ form.telefone.id_for_label }}">
+                Telefone
+              </label>
+              <div class="field-input-wrap">
+                <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.58 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.85a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                <input
+                  type="tel"
+                  id="{{ form.telefone.id_for_label }}"
+                  name="{{ form.telefone.html_name }}"
+                  value="{{ form.telefone.value|default:'' }}"
+                  placeholder="(11) 99999-9999"
+                  class="field-input"
+                  inputmode="tel"
+                >
+              </div>
+              {% if form.telefone.errors %}
+              <p class="field-error-msg">{{ form.telefone.errors|join:", " }}</p>
+              {% endif %}
+            </div>
+
+          </div>
+
+          <!-- Senha -->
+          <div class="field-group {% if form.password1.errors %}field--error{% endif %}">
+            <label class="field-label" for="{{ form.password1.id_for_label }}">
+              Senha
+            </label>
+            <div class="field-input-wrap">
+              <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <input
+                type="password"
+                id="{{ form.password1.id_for_label }}"
+                name="{{ form.password1.html_name }}"
+                placeholder="Mínimo 8 caracteres"
+                autocomplete="new-password"
+                class="field-input"
+                id="id_password1"
+              >
+              <button type="button" class="toggle-pass" onclick="togglePass('id_password1', this)" tabindex="-1" aria-label="Mostrar senha">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            {% if form.password1.errors %}
+            <p class="field-error-msg">{{ form.password1.errors|join:", " }}</p>
+            {% endif %}
+          </div>
+
+          <!-- Confirmar Senha -->
+          <div class="field-group {% if form.password2.errors %}field--error{% endif %}">
+            <label class="field-label" for="{{ form.password2.id_for_label }}">
+              Confirmar senha
+            </label>
+            <div class="field-input-wrap">
+              <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <input
+                type="password"
+                id="{{ form.password2.id_for_label }}"
+                name="{{ form.password2.html_name }}"
+                placeholder="Repita a senha"
+                autocomplete="new-password"
+                class="field-input"
+                id="id_password2"
+              >
+              <button type="button" class="toggle-pass" onclick="togglePass('id_password2', this)" tabindex="-1" aria-label="Mostrar senha">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            {% if form.password2.errors %}
+            <p class="field-error-msg">{{ form.password2.errors|join:", " }}</p>
+            {% endif %}
+          </div>
+
+          <button type="submit" class="reg-submit">
+            Criar conta
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+
+        </form>
+
+        <p class="form-login-link">Já tem conta? <a href="{% url 'login' %}">Entrar agora</a></p>
+
+      </div>
+    </div>
+
+  </div>
+</main>
+
+{% include 'footer.html' %}
+
+
+
+<script src="{% static 'script.js' %}"></script>
+
+{% endblock %}

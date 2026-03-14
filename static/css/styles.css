@@ -360,3 +360,9 @@ main.main-area {
   .content-header h1 { font-size: 22px; }
   .nav-cats { top: var(--header-h); }
 }
+
+.register-btn {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+}
