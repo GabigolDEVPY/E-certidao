@@ -92,13 +92,46 @@ function clearSearch() {
   if (m) m.value = '';
 }
 
+// ─── MODAL CUSTOM ───
+function openModal(id) {
+  const overlay = document.getElementById(id);
+  if (!overlay) return;
+  overlay.classList.add('active');
+  document.documentElement.classList.add('modal-lock');
+}
+
+function closeModal(id) {
+  const overlay = document.getElementById(id);
+  if (!overlay) return;
+  overlay.classList.remove('active');
+  document.documentElement.classList.remove('modal-lock');
+}
+
+// Fechar ao clicar no overlay (fora do modal)
+document.addEventListener('click', function(e) {
+  if (e.target.classList.contains('custom-overlay') && e.target.classList.contains('active')) {
+    e.target.classList.remove('active');
+    document.documentElement.classList.remove('modal-lock');
+  }
+});
+
+// Fechar ao pressionar Escape
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    const activeOverlay = document.querySelector('.custom-overlay.active');
+    if (activeOverlay) {
+      activeOverlay.classList.remove('active');
+      document.documentElement.classList.remove('modal-lock');
+    }
+  }
+});
+
 // ─── MODAL SERVIÇO ───
 function openServiceModal(service) {
   document.getElementById('modalServiceTitle').textContent = service.title;
   document.getElementById('modalServiceDesc').textContent  = service.desc;
   document.querySelectorAll('#modalService input').forEach(i => i.value = '');
-  const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('modalService'));
-  modal.show();
+  openModal('modalService');
 }
 
 // ─── INIT ───
