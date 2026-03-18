@@ -1,13 +1,11 @@
 {% extends "base.html" %}
-{% load static %}
+
 {% block content %}
-<link rel="stylesheet" href="{% static 'styles.css' %}">
+
 <!-- ═══ HEADER ═══ -->
 <header class="site-header sticky-top">
   <div class="container-xl">
     <div class="header-inner">
-
-      <!-- Logo -->
       <a href="/" class="logo">
         <div class="logo-mark">D</div>
         <div class="logo-text">
@@ -15,61 +13,38 @@
           <small class="d-none d-sm-block">Serviço privado de documentos</small>
         </div>
       </a>
-
       <div class="header-actions ms-auto">
         <a href="/" class="client-btn" style="text-decoration:none;">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
           <span class="d-none d-sm-inline">Voltar ao início</span>
         </a>
       </div>
-
     </div>
   </div>
 </header>
 
-<!-- ═══ REGISTER AREA ═══ -->
-<main class="register-main">
-  <div class="register-grid">
+<!-- ═══ MAIN ═══ -->
+<main class="auth-main">
+  <div class="auth-center">
 
-    <!-- Coluna esquerda: branding -->
-    <div class="register-brand">
-      <div class="brand-inner">
-        <div class="brand-tag">Cadastro</div>
-        <h1 class="brand-headline">Crie sua<br><em>conta</em></h1>
-        <p class="brand-sub">Acompanhe seus pedidos, acesse seu histórico e solicite documentos com mais agilidade.</p>
-
-        <div class="brand-steps">
-          <div class="step">
-            <div class="step-num">01</div>
-            <div class="step-text">Preencha o formulário ao lado</div>
-          </div>
-          <div class="step">
-            <div class="step-num">02</div>
-            <div class="step-text">Confirme seu e-mail</div>
-          </div>
-          <div class="step">
-            <div class="step-num">03</div>
-            <div class="step-text">Acesse sua área do cliente</div>
-          </div>
-        </div>
-
-        <div class="brand-divider"></div>
-        <p class="brand-login-hint">Já tem uma conta? <a href="{% url 'login' %}">Entrar</a></p>
-      </div>
-
-      <!-- decorative grain overlay -->
-      <div class="brand-grain" aria-hidden="true"></div>
+    <!-- Cabeçalho acima do card -->
+    <div class="auth-heading">
+      <div class="auth-eyebrow">E-Certidão</div>
+      <h1 class="auth-title">Área do cliente</h1>
     </div>
 
-    <!-- Coluna direita: formulário -->
-    <div class="register-form-col">
-      <div class="form-card">
+    <!-- Card único -->
+    <div class="auth-card">
 
-        <div class="form-card-header">
-          <span class="form-tag">Novo cadastro</span>
-          <h2 class="form-title">Crie sua conta</h2>
-          <p class="form-subtitle">Preencha os dados abaixo para começar.</p>
-        </div>
+      <!-- Tabs -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-register" onclick="switchTab('register')">Cadastrar</button>
+        <button class="auth-tab" id="tab-login" onclick="switchTab('login')">Entrar</button>
+        <div class="auth-tab-indicator" id="tabIndicator"></div>
+      </div>
+
+      <!-- ══ CADASTRO ══ -->
+      <div class="auth-panel" id="panel-register">
 
         {% if form.errors %}
         <div class="form-errors">
@@ -78,169 +53,290 @@
         </div>
         {% endif %}
 
-        <form method="POST" class="reg-form" novalidate>
+        <form method="POST" action="{% url 'register' %}" class="reg-form" novalidate>
           {% csrf_token %}
 
-          <!-- Username -->
           <div class="field-group {% if form.username.errors %}field--error{% endif %}">
-            <label class="field-label" for="{{ form.username.id_for_label }}">
-              Nome de usuário
-            </label>
+            <label class="field-label" for="{{ form.username.id_for_label }}">Nome de usuário</label>
             <div class="field-input-wrap">
               <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              <input
-                type="text"
-                id="{{ form.username.id_for_label }}"
-                name="{{ form.username.html_name }}"
-                value="{{ form.username.value|default:'' }}"
-                placeholder="ex: joaosilva"
-                autocomplete="username"
-                class="field-input"
-              >
+              <input type="text" id="{{ form.username.id_for_label }}" name="{{ form.username.html_name }}" value="{{ form.username.value|default:'' }}" placeholder="ex: joaosilva" autocomplete="username" class="field-input">
             </div>
-            {% if form.username.errors %}
-            <p class="field-error-msg">{{ form.username.errors|join:", " }}</p>
-            {% endif %}
+            {% if form.username.errors %}<p class="field-error-msg">{{ form.username.errors|join:", " }}</p>{% endif %}
           </div>
 
-          <!-- E-mail -->
           <div class="field-group {% if form.email.errors %}field--error{% endif %}">
-            <label class="field-label" for="{{ form.email.id_for_label }}">
-              E-mail
-            </label>
+            <label class="field-label" for="{{ form.email.id_for_label }}">E-mail</label>
             <div class="field-input-wrap">
               <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-              <input
-                type="email"
-                id="{{ form.email.id_for_label }}"
-                name="{{ form.email.html_name }}"
-                value="{{ form.email.value|default:'' }}"
-                placeholder="seu@email.com"
-                autocomplete="email"
-                class="field-input"
-              >
+              <input type="email" id="{{ form.email.id_for_label }}" name="{{ form.email.html_name }}" value="{{ form.email.value|default:'' }}" placeholder="seu@email.com" autocomplete="email" class="field-input">
             </div>
-            {% if form.email.errors %}
-            <p class="field-error-msg">{{ form.email.errors|join:", " }}</p>
-            {% endif %}
+            {% if form.email.errors %}<p class="field-error-msg">{{ form.email.errors|join:", " }}</p>{% endif %}
           </div>
 
-          <!-- CPF / CNPJ + Telefone lado a lado -->
           <div class="field-row">
-
             <div class="field-group {% if form.cpf_cnpj.errors %}field--error{% endif %}">
-              <label class="field-label" for="{{ form.cpf_cnpj.id_for_label }}">
-                CPF / CNPJ
-              </label>
+              <label class="field-label" for="{{ form.cpf_cnpj.id_for_label }}">CPF / CNPJ</label>
               <div class="field-input-wrap">
                 <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="7" y1="9" x2="17" y2="9"/><line x1="7" y1="13" x2="13" y2="13"/></svg>
-                <input
-                  type="text"
-                  id="{{ form.cpf_cnpj.id_for_label }}"
-                  name="{{ form.cpf_cnpj.html_name }}"
-                  value="{{ form.cpf_cnpj.value|default:'' }}"
-                  placeholder="000.000.000-00"
-                  class="field-input"
-                  inputmode="numeric"
-                >
+                <input type="text" id="{{ form.cpf_cnpj.id_for_label }}" name="{{ form.cpf_cnpj.html_name }}" value="{{ form.cpf_cnpj.value|default:'' }}" placeholder="000.000.000-00" class="field-input" inputmode="numeric">
               </div>
-              {% if form.cpf_cnpj.errors %}
-              <p class="field-error-msg">{{ form.cpf_cnpj.errors|join:", " }}</p>
-              {% endif %}
+              {% if form.cpf_cnpj.errors %}<p class="field-error-msg">{{ form.cpf_cnpj.errors|join:", " }}</p>{% endif %}
             </div>
-
             <div class="field-group {% if form.telefone.errors %}field--error{% endif %}">
-              <label class="field-label" for="{{ form.telefone.id_for_label }}">
-                Telefone
-              </label>
+              <label class="field-label" for="{{ form.telefone.id_for_label }}">Telefone</label>
               <div class="field-input-wrap">
                 <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.58 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.85a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                <input
-                  type="tel"
-                  id="{{ form.telefone.id_for_label }}"
-                  name="{{ form.telefone.html_name }}"
-                  value="{{ form.telefone.value|default:'' }}"
-                  placeholder="(11) 99999-9999"
-                  class="field-input"
-                  inputmode="tel"
-                >
+                <input type="tel" id="{{ form.telefone.id_for_label }}" name="{{ form.telefone.html_name }}" value="{{ form.telefone.value|default:'' }}" placeholder="(11) 99999-9999" class="field-input" inputmode="tel">
               </div>
-              {% if form.telefone.errors %}
-              <p class="field-error-msg">{{ form.telefone.errors|join:", " }}</p>
-              {% endif %}
+              {% if form.telefone.errors %}<p class="field-error-msg">{{ form.telefone.errors|join:", " }}</p>{% endif %}
             </div>
-
           </div>
 
-          <!-- Senha -->
           <div class="field-group {% if form.password1.errors %}field--error{% endif %}">
-            <label class="field-label" for="{{ form.password1.id_for_label }}">
-              Senha
-            </label>
+            <label class="field-label" for="id_password1">Senha</label>
             <div class="field-input-wrap">
               <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              <input
-                type="password"
-                id="{{ form.password1.id_for_label }}"
-                name="{{ form.password1.html_name }}"
-                placeholder="Mínimo 8 caracteres"
-                autocomplete="new-password"
-                class="field-input"
-                id="id_password1"
-              >
-              <button type="button" class="toggle-pass" onclick="togglePass('id_password1', this)" tabindex="-1" aria-label="Mostrar senha">
+              <input type="password" id="id_password1" name="{{ form.password1.html_name }}" placeholder="Mínimo 8 caracteres" autocomplete="new-password" class="field-input">
+              <button type="button" class="toggle-pass" onclick="togglePass('id_password1',this)" tabindex="-1">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
             </div>
-            {% if form.password1.errors %}
-            <p class="field-error-msg">{{ form.password1.errors|join:", " }}</p>
-            {% endif %}
+            {% if form.password1.errors %}<p class="field-error-msg">{{ form.password1.errors|join:", " }}</p>{% endif %}
           </div>
 
-          <!-- Confirmar Senha -->
           <div class="field-group {% if form.password2.errors %}field--error{% endif %}">
-            <label class="field-label" for="{{ form.password2.id_for_label }}">
-              Confirmar senha
-            </label>
+            <label class="field-label" for="id_password2">Confirmar senha</label>
             <div class="field-input-wrap">
               <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              <input
-                type="password"
-                id="{{ form.password2.id_for_label }}"
-                name="{{ form.password2.html_name }}"
-                placeholder="Repita a senha"
-                autocomplete="new-password"
-                class="field-input"
-                id="id_password2"
-              >
-              <button type="button" class="toggle-pass" onclick="togglePass('id_password2', this)" tabindex="-1" aria-label="Mostrar senha">
+              <input type="password" id="id_password2" name="{{ form.password2.html_name }}" placeholder="Repita a senha" autocomplete="new-password" class="field-input">
+              <button type="button" class="toggle-pass" onclick="togglePass('id_password2',this)" tabindex="-1">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
             </div>
-            {% if form.password2.errors %}
-            <p class="field-error-msg">{{ form.password2.errors|join:", " }}</p>
-            {% endif %}
+            {% if form.password2.errors %}<p class="field-error-msg">{{ form.password2.errors|join:", " }}</p>{% endif %}
           </div>
 
           <button type="submit" class="reg-submit">
             Criar conta
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </button>
-
         </form>
-
-        <p class="form-login-link">Já tem conta? <a href="{% url 'login' %}">Entrar agora</a></p>
-
       </div>
+
+      <!-- ══ LOGIN ══ -->
+      <div class="auth-panel" id="panel-login" style="display:none;">
+        <form method="POST" action="{% url 'login' %}" class="reg-form" novalidate>
+          {% csrf_token %}
+
+          <div class="field-group">
+            <label class="field-label" for="login_username">Usuário ou e-mail</label>
+            <div class="field-input-wrap">
+              <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <input type="text" id="login_username" name="username" placeholder="seu usuário ou e-mail" autocomplete="username" class="field-input">
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="login_password">Senha</label>
+            <div class="field-input-wrap">
+              <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <input type="password" id="login_password" name="password" placeholder="••••••••" autocomplete="current-password" class="field-input">
+              <button type="button" class="toggle-pass" onclick="togglePass('login_password',this)" tabindex="-1">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="forgot-wrap">
+            <a href="#" class="forgot-link">Esqueci minha senha</a>
+          </div>
+
+          <button type="submit" class="reg-submit">
+            Entrar
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+        </form>
+      </div>
+
     </div>
+    <!-- /auth-card -->
 
   </div>
 </main>
 
 {% include 'footer.html' %}
+{% load static %}
 
+<style>
+/* ─── LAYOUT ─── */
+body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; }
 
+.auth-main {
+  flex: 1;
+  background: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px 64px;
+}
 
-<script src="{% static 'script.js' %}"></script>
+.auth-center {
+  width: 100%;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ─── HEADING ─── */
+.auth-heading { text-align: center; }
+
+.auth-eyebrow {
+  font-size: 10px; font-weight: 600; letter-spacing: 1.8px;
+  text-transform: uppercase; color: var(--accent);
+  margin-bottom: 6px;
+}
+
+.auth-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 28px; font-weight: 400; color: var(--ink);
+  margin: 0;
+}
+
+/* ─── CARD ─── */
+.auth-card {
+  background: var(--white);
+  border: 1px solid var(--rule);
+  border-top: 3px solid var(--accent);
+  padding: 28px 32px 32px;
+}
+
+/* ─── TABS ─── */
+.auth-tabs {
+  display: flex; position: relative;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 24px;
+}
+
+.auth-tab {
+  flex: 1; background: none; border: none;
+  padding: 10px 16px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 500; color: var(--ink-light);
+  cursor: pointer; transition: color .15s; z-index: 1;
+}
+.auth-tab.active { color: var(--ink); font-weight: 600; }
+.auth-tab:hover:not(.active) { color: var(--ink); }
+
+.auth-tab-indicator {
+  position: absolute; bottom: -1px; left: 0;
+  height: 2px; width: 50%; background: var(--accent);
+  transition: transform .22s cubic-bezier(.4,0,.2,1);
+}
+.auth-tab-indicator.at-login { transform: translateX(100%); }
+
+/* ─── PANEL ─── */
+.auth-panel { animation: fadeUp .16s ease; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── ERRORS ─── */
+.form-errors {
+  display: flex; align-items: center; gap: 8px;
+  background: #fef2f2; border: 1px solid #fca5a5;
+  border-left: 3px solid var(--accent);
+  padding: 10px 14px; font-size: 12.5px; color: #b91c1c;
+  margin-bottom: 16px;
+}
+
+/* ─── FIELDS ─── */
+.reg-form { display: flex; flex-direction: column; gap: 14px; }
+
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.field-group { display: flex; flex-direction: column; gap: 5px; }
+
+.field-label {
+  font-size: 10.5px; font-weight: 600; letter-spacing: .6px;
+  text-transform: uppercase; color: var(--ink);
+}
+
+.field-input-wrap { position: relative; display: flex; align-items: center; }
+
+.field-icon {
+  position: absolute; left: 11px; color: var(--rule);
+  pointer-events: none; transition: color .2s;
+}
+
+.field-input {
+  width: 100%; padding: 10px 12px 10px 34px;
+  border: 1px solid var(--rule); border-radius: 0;
+  background: var(--paper);
+  font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--ink);
+  outline: none; transition: border-color .2s, box-shadow .2s; box-sizing: border-box;
+}
+.field-input::placeholder { color: rgba(61,74,92,.35); }
+.field-input:focus {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 2px rgba(15,25,35,.05);
+  background: var(--white);
+}
+.field-input-wrap:focus-within .field-icon { color: var(--ink-light); }
+
+.toggle-pass {
+  position: absolute; right: 10px;
+  background: none; border: none; cursor: pointer;
+  color: rgba(61,74,92,.3); padding: 4px;
+  display: flex; align-items: center; transition: color .15s;
+}
+.toggle-pass:hover { color: var(--ink); }
+
+.field--error .field-input { border-color: var(--accent); }
+.field-error-msg { font-size: 11px; color: var(--accent); margin: 0; line-height: 1.4; }
+
+.forgot-wrap { display: flex; justify-content: flex-end; }
+.forgot-link { font-size: 12px; color: var(--ink-light); text-decoration: none; transition: color .15s; }
+.forgot-link:hover { color: var(--accent); }
+
+/* ─── SUBMIT ─── */
+.reg-submit {
+  margin-top: 4px; padding: 13px 20px;
+  background: var(--ink); color: #fff; border: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 600; letter-spacing: .8px; text-transform: uppercase;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+  transition: background .2s, transform .15s; width: 100%;
+}
+.reg-submit:hover { background: var(--accent); transform: translateY(-1px); }
+.reg-submit:active { transform: translateY(0); }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 480px) {
+  .auth-card { padding: 24px 20px 28px; }
+  .field-row { grid-template-columns: 1fr; }
+}
+</style>
+
+<script>
+function switchTab(tab) {
+  const isLogin = tab === 'login';
+  document.getElementById('panel-register').style.display = isLogin ? 'none' : 'block';
+  document.getElementById('panel-login').style.display    = isLogin ? 'block' : 'none';
+  document.getElementById('tab-register').classList.toggle('active', !isLogin);
+  document.getElementById('tab-login').classList.toggle('active', isLogin);
+  document.getElementById('tabIndicator').classList.toggle('at-login', isLogin);
+}
+
+function togglePass(id, btn) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const hide = el.type === 'text';
+  el.type = hide ? 'password' : 'text';
+  btn.style.color = hide ? '' : 'var(--ink)';
+}
+</script>
 
 {% endblock %}
