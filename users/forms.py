@@ -4,7 +4,8 @@ from .models import User
 
 
 class RegisterForm(UserCreationForm):
-
+    first_name = forms.CharField(max_length=50, required=True, label="Nome")
+    last_name  = forms.CharField(max_length=50, required=True, label="Sobrenome")
     class Meta:
         model = User
         fields = (

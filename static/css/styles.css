@@ -104,6 +104,7 @@ main.main-area {
 }
 
 .client-btn {
+  text-decoration: none;
   display: flex; align-items: center; gap: 7px;
   background: none; border: 1px solid rgba(255,255,255,.25); border-radius: 3px;
   padding: 6px 14px;
