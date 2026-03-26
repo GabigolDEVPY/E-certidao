@@ -14,55 +14,104 @@
 
       <!-- Busca desktop -->
       <div class="search-wrap d-none d-md-flex">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" id="searchInput" placeholder="Buscar documento..." oninput="filterServices(this.value)" autocomplete="off">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+        <input type="text" id="searchInput" placeholder="Buscar documento..." oninput="filterServices(this.value)"
+          autocomplete="off">
       </div>
-      
 
       <!-- Ações -->
       <div class="header-actions ms-auto">
         <button class="icon-btn d-md-none" data-bs-toggle="collapse" data-bs-target="#mobileSearch" aria-label="Buscar">
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
         </button>
         <button class="icon-btn cart-btn" aria-label="Carrinho" onclick="openModal('modalCart')">
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="9" cy="21" r="1" />
+            <circle cx="20" cy="21" r="1" />
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+          </svg>
           <span class="cart-badge">0</span>
         </button>
 
         {% if user.is_authenticated %}
-          <div class="dropdown">
-            <button class="client-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              <span class="d-none d-sm-inline">{{ user.first_name|default:user.username }}</span>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end">
-              <li><span class="dropdown-item-text text-muted small">{{ user.email }}</span></li>
-              <li><hr class="dropdown-divider"></li>
-              <li>
-                <form method="POST" action="{% url 'logout' %}">
-                  {% csrf_token %}
-                  <button type="submit" class="dropdown-item text-danger">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                    Sair
-                  </button>
-                </form>
-              </li>
-            </ul>
-          </div>
+        <div class="dropdown">
+          <button class="client-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+            <span class="d-none d-sm-inline">{{ user.first_name|default:user.username }}</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><span class="dropdown-item-text text-muted small">{{ user.email }}</span></li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <!-- 🆕 Área do Consumidor -->
+            <li>
+              <a href="" class="dropdown-item">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="3" width="20" height="14" rx="2" />
+                  <path d="M8 21h8M12 17v4" />
+                </svg>
+                Área do Consumidor
+              </a>
+            </li>
+
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li>
+              <form method="POST" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="dropdown-item text-danger">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                  </svg>
+                  Sair
+                </button>
+              </form>
+            </li>
+          </ul>
+        </div>
         {% else %}
-          <a href="{% url 'register' %}" class="client-btn">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            Área do cliente
-          </a>
+        <a href="{% url 'register' %}" class="client-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+          Área do cliente
+        </a>
         {% endif %}
       </div>
 
-    <!-- Busca mobile collapse -->
-    <div class="collapse" id="mobileSearch">
-      <div class="mobile-search-wrap">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" id="searchInputMobile" placeholder="Buscar documento..." oninput="filterServices(this.value)" autocomplete="off">
+      <!-- Busca mobile collapse -->
+      <div class="collapse" id="mobileSearch">
+        <div class="mobile-search-wrap">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input type="text" id="searchInputMobile" placeholder="Buscar documento..."
+            oninput="filterServices(this.value)" autocomplete="off">
+        </div>
       </div>
     </div>
-  </div>
 </header>

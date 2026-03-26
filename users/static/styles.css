@@ -420,3 +420,40 @@ body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; }
   .auth-card { padding: 24px 20px 28px; }
   .field-row { grid-template-columns: 1fr; }
 }
+
+.back-home-btn {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-muted, #6b7280);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.back-home-btn:hover {
+  background: var(--surface-hover, #f3f4f6);
+  color: var(--text-main, #111);
+}
+
+@media (max-width: 480px) {
+  .back-home-btn {
+    top: 1rem;
+    left: 1rem;
+  }
+}
+.auth-main {
+  flex: 1;
+  background: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px 64px;
+  position: relative; /* 👈 adiciona isso */
+}
