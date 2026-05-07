@@ -3,20 +3,21 @@
 function loadServicesFromDOM() {
   return Array.from(document.querySelectorAll('#servicesData .service-data')).map(el => ({
     categories: el.dataset.categories.split(','),
-    title:      el.dataset.title,
-    desc:       el.dataset.desc,
-    iconId:     el.dataset.iconId,
+    url: el.dataset.url || '',
+    title: el.dataset.title,
+    desc: el.dataset.desc,
+    iconId: el.dataset.iconId,
   }));
 }
 
 const allServices = loadServicesFromDOM();
-let currentTab    = 'imoveis';
+let currentTab = 'imoveis';
 
 const tabLabels = {
-  todos:    'Todos os Serviços',
+  todos: 'Todos os Serviços',
   registro: 'Registro Civil',
-  imoveis:  'Imóveis',
-  notas:    'Notas',
+  imoveis: 'Imóveis',
+  notas: 'Notas',
   protesto: 'Protesto',
   pesquisa: 'Pesquisa',
 };
@@ -26,13 +27,13 @@ function renderServices(tab, query = '') {
   const list = document.getElementById('serviceList');
 
   const filtered = allServices.filter(s => {
-    const matchTab   = s.categories.includes(tab);
-    const q          = query.toLowerCase();
+    const matchTab = s.categories.includes(tab);
+    const q = query.toLowerCase();
     const matchQuery = !q || s.title.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q);
     return matchTab && matchQuery;
   });
 
-  document.getElementById('tabTitle').textContent     = query ? `"${query}"` : (tabLabels[tab] || tab);
+  document.getElementById('tabTitle').textContent = query ? `"${query}"` : (tabLabels[tab] || tab);
   document.getElementById('contentCount').textContent = `${filtered.length} serviço${filtered.length !== 1 ? 's' : ''}`;
 
   list.innerHTML = '';
@@ -42,9 +43,8 @@ function renderServices(tab, query = '') {
     return;
   }
 
-  filtered.forEach((s, i) => {
+  filtered.forEach(s => {
     const card = document.createElement('a');
-    card.href      = '#';
     card.className = 'service-card';
     card.innerHTML = `
       <div class="service-icon">
@@ -53,10 +53,17 @@ function renderServices(tab, query = '') {
       <span class="service-title">${s.title}</span>
       <span class="service-arrow">→</span>
     `;
-    card.addEventListener('click', e => {
-      e.preventDefault();
-      openServiceModal(s);
-    });
+
+    if (s.url) {
+      card.href = s.url;
+    } else {
+      card.href = '#';
+      card.addEventListener('click', e => {
+        e.preventDefault();
+        openServiceModal(s);
+      });
+    }
+
     list.appendChild(card);
   });
 }
@@ -108,7 +115,7 @@ function closeModal(id) {
 }
 
 // Fechar ao clicar no overlay (fora do modal)
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
   if (e.target.classList.contains('custom-overlay') && e.target.classList.contains('active')) {
     e.target.classList.remove('active');
     document.documentElement.classList.remove('modal-lock');
@@ -116,7 +123,7 @@ document.addEventListener('click', function(e) {
 });
 
 // Fechar ao pressionar Escape
-document.addEventListener('keydown', function(e) {
+document.addEventListener('keydown', function (e) {
   if (e.key === 'Escape') {
     const activeOverlay = document.querySelector('.custom-overlay.active');
     if (activeOverlay) {
@@ -129,7 +136,7 @@ document.addEventListener('keydown', function(e) {
 // ─── MODAL SERVIÇO ───
 function openServiceModal(service) {
   document.getElementById('modalServiceTitle').textContent = service.title;
-  document.getElementById('modalServiceDesc').textContent  = service.desc;
+  document.getElementById('modalServiceDesc').textContent = service.desc;
   document.querySelectorAll('#modalService input').forEach(i => i.value = '');
   openModal('modalService');
 }

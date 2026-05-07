@@ -1,564 +1,859 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="form-wrapper">
+<form method="post" id="pedidoForm" novalidate>
+  {% csrf_token %}
 
-  <div class="form-header">
-    <h1>Solicitar Certidão</h1>
-    <span class="sub">Certidão de Imóvel</span>
-  </div>
+  <!-- ══ Hidden inputs para campos populados por JS ══ -->
+  <input type="hidden" name="tipo_certidao" id="id_tipo_certidao"
+         value="{{ form.tipo_certidao.value|default:'inteiro-teor' }}">
+  <input type="hidden" name="tipo_busca" id="id_tipo_busca"
+         value="{{ form.tipo_busca.value|default:'matricula' }}">
+  <input type="hidden" name="matriculas" id="id_matriculas"
+         value="{{ form.matriculas.value|default:'' }}">
 
-  <!-- ══ STEP 1 — Tipo de Certidão ══ -->
-  <div class="step-block is-active" id="step1">
-    <div class="step-header">
-      <div class="step-num"><span class="step-num-inner">1</span></div>
-      <div class="step-meta">
-        <div class="step-title">Tipo de Certidão</div>
-        <div class="step-subtitle">Selecione qual documento você precisa</div>
-        <div class="step-summary" id="s1summary"></div>
+  <div class="form-wrapper">
+
+    <!-- ══ STEP 1 — Tipo de Certidão ══ -->
+    <div class="step-block is-active" id="step1">
+      <div class="step-header">
+        <div class="step-num"><span class="step-num-inner">1</span></div>
+        <div class="step-meta">
+          <div class="step-title">Tipo de Certidão</div>
+          <div class="step-subtitle">Selecione qual documento você precisa</div>
+          <div class="step-summary" id="s1summary"></div>
+        </div>
+        <div class="step-edit-link" onclick="editStep(1)">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+          </svg>
+          Editar
+        </div>
       </div>
-      <div class="step-edit-link" onclick="editStep(1)">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        Editar
+      <div class="step-body">
+        <div class="field-hint">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          Selecione qual documento você precisa:
+        </div>
+
+        <div class="option-cards" id="cardsTipo">
+          <div class="option-card {% if form.tipo_certidao.value == 'inteiro-teor' or not form.tipo_certidao.value %}is-selected{% endif %}" data-value="inteiro-teor" onclick="selectCard(this,'cardsTipo')">
+            <div>
+              <div class="option-card-title">CERTIDÃO INTEIRO TEOR</div>
+              <div class="option-card-sub">Certidão de Imóveis</div>
+            </div>
+            <div class="option-card-check"></div>
+          </div>
+          <div class="option-card {% if form.tipo_certidao.value == 'onus-reais' %}is-selected{% endif %}" data-value="onus-reais" onclick="selectCard(this,'cardsTipo')">
+            <div>
+              <div class="option-card-title">CERTIDÃO DE ÔNUS REAIS</div>
+              <div class="option-card-sub">Certidão de Imóveis</div>
+            </div>
+            <div class="option-card-check"></div>
+          </div>
+          <div class="option-card {% if form.tipo_certidao.value == 'vintenaria' %}is-selected{% endif %}" data-value="vintenaria" onclick="selectCard(this,'cardsTipo')">
+            <div>
+              <div class="option-card-title">CERTIDÃO VINTENÁRIA</div>
+              <div class="option-card-sub">Certidão de Imóveis</div>
+            </div>
+            <div class="option-card-check"></div>
+          </div>
+          <div class="option-card {% if form.tipo_certidao.value == 'atualizada' %}is-selected{% endif %}" data-value="atualizada" onclick="selectCard(this,'cardsTipo')">
+            <div>
+              <div class="option-card-title">CERTIDÃO ATUALIZADA + ÔNUS REAIS + AÇÕES</div>
+              <div class="option-card-sub">Certidão de Imóveis</div>
+            </div>
+            <div class="option-card-check"></div>
+          </div>
+        </div>
+
+        <div class="step-actions">
+          <button type="button" class="btn-next" onclick="nextStep1()">Avançar →</button>
+        </div>
       </div>
     </div>
-    <div class="step-body">
-      <div class="field-hint">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        Selecione qual documento você precisa:
-      </div>
 
-      <div class="option-cards" id="cardsTipo">
-        <div class="option-card is-selected" data-value="inteiro-teor" onclick="selectCard(this,'cardsTipo')">
-          <div>
-            <div class="option-card-title">CERTIDÃO INTEIRO TEOR</div>
-            <div class="option-card-sub">Certidão de Imóveis</div>
-          </div>
-          <div class="option-card-check"></div>
+    <!-- ══ STEP 2 — Cartório de Origem ══ -->
+    <div class="step-block" id="step2">
+      <div class="step-header" onclick="editStep(2)">
+        <div class="step-num"><span class="step-num-inner">2</span></div>
+        <div class="step-meta">
+          <div class="step-title">Dados do Cartório de Origem</div>
+          <div class="step-subtitle">Informe o cartório de onde está a certidão</div>
+          <div class="step-summary" id="s2summary"></div>
         </div>
-        <div class="option-card" data-value="onus-reais" onclick="selectCard(this,'cardsTipo')">
-          <div>
-            <div class="option-card-title">CERTIDÃO DE ÔNUS REAIS</div>
-            <div class="option-card-sub">Certidão de Imóveis</div>
-          </div>
-          <div class="option-card-check"></div>
-        </div>
-        <div class="option-card" data-value="vintenaria" onclick="selectCard(this,'cardsTipo')">
-          <div>
-            <div class="option-card-title">CERTIDÃO VINTENÁRIA</div>
-            <div class="option-card-sub">Certidão de Imóveis</div>
-          </div>
-          <div class="option-card-check"></div>
-        </div>
-        <div class="option-card" data-value="atualizada" onclick="selectCard(this,'cardsTipo')">
-          <div>
-            <div class="option-card-title">CERTIDÃO ATUALIZADA + ÔNUS REAIS + AÇÕES</div>
-            <div class="option-card-sub">Certidão de Imóveis</div>
-          </div>
-          <div class="option-card-check"></div>
+        <div class="step-edit-link">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+          </svg>
+          Editar
         </div>
       </div>
-
-      <div class="step-actions">
-        <button class="btn-next" onclick="nextStep1()">Avançar →</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══ STEP 2 — Cartório de Origem ══ -->
-  <div class="step-block" id="step2">
-    <div class="step-header" onclick="editStep(2)">
-      <div class="step-num"><span class="step-num-inner">2</span></div>
-      <div class="step-meta">
-        <div class="step-title">Dados do Cartório de Origem</div>
-        <div class="step-subtitle">Informe o cartório de onde está a certidão</div>
-        <div class="step-summary" id="s2summary"></div>
-      </div>
-      <div class="step-edit-link">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        Editar
-      </div>
-    </div>
-    <div class="step-body">
-      <div class="field-hint">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        Informe dados do cartório de origem de onde está a certidão:
-      </div>
-
-      <div class="fields-row">
-        <div>
-          <label class="field-label">Estado <span class="req">*</span></label>
-          <div class="field-wrap">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <select class="field-select has-icon" id="sel-estado" onchange="onEstadoChange()">
-              <option value="">Selecione...</option>
-              <option>AC - Acre</option><option>AL - Alagoas</option><option>AM - Amazonas</option>
-              <option>BA - Bahia</option><option>CE - Ceará</option><option>DF - Distrito Federal</option>
-              <option>ES - Espírito Santo</option><option>GO - Goiás</option><option>MA - Maranhão</option>
-              <option>MG - Minas Gerais</option><option>MS - Mato Grosso do Sul</option>
-              <option>MT - Mato Grosso</option><option>PA - Pará</option><option>PB - Paraíba</option>
-              <option>PE - Pernambuco</option><option>PI - Piauí</option><option>PR - Paraná</option>
-              <option>RJ - Rio de Janeiro</option><option>RN - Rio Grande do Norte</option>
-              <option>RO - Rondônia</option><option>RR - Roraima</option><option>RS - Rio Grande do Sul</option>
-              <option>SC - Santa Catarina</option><option>SE - Sergipe</option><option>SP - São Paulo</option>
-              <option>TO - Tocantins</option>
-            </select>
-          </div>
-        </div>
-        <div>
-          <label class="field-label">Cidade <span class="req">*</span></label>
-          <div class="field-wrap">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <select class="field-select has-icon" id="sel-cidade" onchange="onCidadeChange()">
-              <option value="">Selecione o estado primeiro...</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div class="field-full">
-        <label class="field-label">Cartório <span class="req">*</span></label>
-        <div class="field-wrap">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <select class="field-select has-icon" id="sel-cartorio">
-            <option value="">Selecione a cidade primeiro...</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="step-actions">
-        <button class="btn-back" onclick="goToStep(1)">Voltar</button>
-        <button class="btn-next" onclick="nextStep2()">Avançar →</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══ STEP 3 — Dados da Certidão ══ -->
-  <div class="step-block" id="step3">
-    <div class="step-header" onclick="editStep(3)">
-      <div class="step-num"><span class="step-num-inner">3</span></div>
-      <div class="step-meta">
-        <div class="step-title">Dados da Certidão</div>
-        <div class="step-subtitle">Solicitante e informações do imóvel</div>
-        <div class="step-summary" id="s3summary"></div>
-      </div>
-      <div class="step-edit-link">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        Editar
-      </div>
-    </div>
-    <div class="step-body">
-
-      <div class="sec-divider">
-        <div class="sec-divider-label">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          Dados do Solicitante
-        </div>
-        <div class="sec-divider-line"></div>
-      </div>
-      <p style="font-size:12px;color:var(--ink-light);margin-bottom:14px;">Estes são os dados para contato e envio da certidão.</p>
-
-      <div class="fields-row cols-3">
-        <div>
-          <label class="field-label">Nome do solicitante <span class="req">*</span></label>
-          <div class="field-wrap">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            <input type="text" id="inp-nome" class="field-input has-icon" placeholder="Seu nome completo">
-          </div>
-        </div>
-        <div>
-          <label class="field-label">E-mail <span class="req">*</span></label>
-          <div class="field-wrap">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-            <input type="email" id="inp-email" class="field-input has-icon" placeholder="seu@email.com">
-          </div>
-        </div>
-        <div>
-          <label class="field-label">Telefone (com DDD) <span class="req">*</span></label>
-          <div class="phone-wrap">
-            <div class="phone-flag">🇧🇷 +55</div>
-            <input type="tel" id="inp-tel" placeholder="(11) 99999-9999">
-          </div>
-        </div>
-      </div>
-
-      <div class="sec-divider" style="margin-top:20px;">
-        <div class="sec-divider-label">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          Dados da Certidão
-        </div>
-        <div class="sec-divider-line"></div>
-      </div>
-
-      <div class="attention-box">
-        <strong>Leia com atenção:</strong> Preencha os dados do pedido com cuidado, pois a busca e localização da certidão serão exatamente pelos dados fornecidos.
-      </div>
-
-      <label class="field-label" style="margin-bottom:10px;">Formato da certidão <span class="req">*</span></label>
-      <div class="radio-group" style="margin-bottom:20px;">
-        <div class="radio-item">
-          <input type="radio" name="formato" id="f1" value="atualizada">
-          <label for="f1">Certidão de Imóvel Atualizada + Ônus Reais + Ações</label>
-        </div>
-        <div class="radio-item">
-          <input type="radio" name="formato" id="f2" value="inteiro-teor" checked>
-          <label for="f2">Certidão de Inteiro Teor do Imóvel</label>
-        </div>
-        <div class="radio-item">
-          <input type="radio" name="formato" id="f3" value="onus">
-          <label for="f3">Certidão de Ônus Reais</label>
-        </div>
-        <div class="radio-item">
-          <input type="radio" name="formato" id="f4" value="vintenaria">
-          <label for="f4">Certidão Vintenária</label>
-        </div>
-      </div>
-
-      <div class="panel-row" id="panelIdentif">
-        <div class="panel-card is-selected" data-value="matricula"
-          onclick="selectPanel(this,'panelIdentif'); showSection('secMatricula'); hideSection('secEndereco')">
-          <div class="panel-card-title">Tenho a matrícula / transcrição</div>
-          <div class="panel-card-sub">Para os casos onde você possui a matrícula ou transcrição de um ou mais imóveis.</div>
-        </div>
-        <div class="panel-card" data-value="endereco"
-          onclick="selectPanel(this,'panelIdentif'); showSection('secEndereco'); hideSection('secMatricula')">
-          <div class="panel-card-title">Tenho o endereço do imóvel</div>
-          <div class="panel-card-sub">Para os casos onde você possui apenas o endereço completo do imóvel.</div>
-        </div>
-      </div>
-
-      <!-- Matrícula -->
-      <div id="secMatricula">
-        <label class="field-label" style="margin-bottom:9px;">Tipo de identificação</label>
-        <div class="radio-group" style="margin-bottom:14px;">
-          <div class="radio-item">
-            <input type="radio" name="tipoIdent" id="ti1" value="matricula" checked>
-            <label for="ti1">Tenho o número da matrícula do imóvel</label>
-          </div>
-          <div class="radio-item">
-            <input type="radio" name="tipoIdent" id="ti2" value="transcricao">
-            <label for="ti2">Tenho o número da transcrição do imóvel</label>
-          </div>
+      <div class="step-body">
+        <div class="field-hint">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          Informe dados do cartório de origem de onde está a certidão:
         </div>
 
-        <label class="field-label" style="margin-bottom:6px;">
-          Adicionar matrícula(s) <span class="req">*</span>
-          <span style="text-transform:none;letter-spacing:0;font-weight:400;margin-left:8px;">
-            <a href="#" onclick="return false;" style="color:var(--accent);font-size:10.5px;">ⓘ Ver exemplo do número</a>
-          </span>
-        </label>
-        <div class="add-row">
-          <input type="text" id="inp-matricula" class="field-input" placeholder="1234567"
-            onkeydown="if(event.key==='Enter'){event.preventDefault();addMatricula()}">
-          <button class="add-btn" onclick="addMatricula()">+ Adicionar</button>
-        </div>
-        <div class="matricula-list" id="matList"></div>
-      </div>
-
-      <!-- Endereço do imóvel -->
-      <div id="secEndereco" style="display:none;">
         <div class="fields-row">
           <div>
-            <label class="field-label">CEP do imóvel <span class="req">*</span></label>
-            <input type="text" class="field-input" placeholder="00000-000">
+            <label class="field-label">Estado <span class="req">*</span></label>
+            <div class="field-wrap">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              <select name="estado" class="field-select has-icon {% if form.estado.errors %}field-input-error{% endif %}" id="sel-estado" onchange="onEstadoChange()">
+                <option value="">Selecione...</option>
+                <option>AC - Acre</option>
+                <option>AL - Alagoas</option>
+                <option>AM - Amazonas</option>
+                <option>BA - Bahia</option>
+                <option>CE - Ceará</option>
+                <option>DF - Distrito Federal</option>
+                <option>ES - Espírito Santo</option>
+                <option>GO - Goiás</option>
+                <option>MA - Maranhão</option>
+                <option>MG - Minas Gerais</option>
+                <option>MS - Mato Grosso do Sul</option>
+                <option>MT - Mato Grosso</option>
+                <option>PA - Pará</option>
+                <option>PB - Paraíba</option>
+                <option>PE - Pernambuco</option>
+                <option>PI - Piauí</option>
+                <option>PR - Paraná</option>
+                <option>RJ - Rio de Janeiro</option>
+                <option>RN - Rio Grande do Norte</option>
+                <option>RO - Rondônia</option>
+                <option>RR - Roraima</option>
+                <option>RS - Rio Grande do Sul</option>
+                <option>SC - Santa Catarina</option>
+                <option>SE - Sergipe</option>
+                <option>SP - São Paulo</option>
+                <option>TO - Tocantins</option>
+              </select>
+            </div>
+            {% if form.estado.errors %}<div class="field-error">{% for e in form.estado.errors %}{{ e }}{% endfor %}</div>{% endif %}
           </div>
           <div>
-            <label class="field-label">Número <span class="req">*</span></label>
-            <input type="text" class="field-input" placeholder="Nº do imóvel">
+            <label class="field-label">Cidade <span class="req">*</span></label>
+            <div class="field-wrap">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              <select name="cidade" class="field-select has-icon {% if form.cidade.errors %}field-input-error{% endif %}" id="sel-cidade" onchange="onCidadeChange()">
+                <option value="">Selecione o estado primeiro...</option>
+              </select>
+            </div>
+            {% if form.cidade.errors %}<div class="field-error">{% for e in form.cidade.errors %}{{ e }}{% endfor %}</div>{% endif %}
           </div>
         </div>
+
+        <div class="field-full">
+          <label class="field-label">Cartório <span class="req">*</span></label>
+          <div class="field-wrap">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
+            <select name="cartorio" class="field-select has-icon {% if form.cartorio.errors %}field-input-error{% endif %}" id="sel-cartorio">
+              <option value="">Selecione a cidade primeiro...</option>
+            </select>
+          </div>
+          {% if form.cartorio.errors %}<div class="field-error">{% for e in form.cartorio.errors %}{{ e }}{% endfor %}</div>{% endif %}
+        </div>
+
+        <div class="step-actions">
+          <button type="button" class="btn-back" onclick="goToStep(1)">Voltar</button>
+          <button type="button" class="btn-next" onclick="nextStep2()">Avançar →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ STEP 3 — Dados da Certidão ══ -->
+    <div class="step-block" id="step3">
+      <div class="step-header" onclick="editStep(3)">
+        <div class="step-num"><span class="step-num-inner">3</span></div>
+        <div class="step-meta">
+          <div class="step-title">Dados da Certidão</div>
+          <div class="step-subtitle">Solicitante e informações do imóvel</div>
+          <div class="step-summary" id="s3summary"></div>
+        </div>
+        <div class="step-edit-link">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+          </svg>
+          Editar
+        </div>
+      </div>
+      <div class="step-body">
+
+        <div class="sec-divider">
+          <div class="sec-divider-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+            Dados do Solicitante
+          </div>
+          <div class="sec-divider-line"></div>
+        </div>
+        <p style="font-size:12px;color:var(--ink-light);margin-bottom:14px;">Estes são os dados para contato e envio da certidão.</p>
+
+        <div class="fields-row cols-3">
+          <div>
+            <label class="field-label">Nome do solicitante <span class="req">*</span></label>
+            <div class="field-wrap">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+              <input type="text" name="nome_solicitante" id="inp-nome" class="field-input has-icon {% if form.nome_solicitante.errors %}field-input-error{% endif %}"
+                     placeholder="Seu nome completo" value="{{ form.nome_solicitante.value|default:'' }}">
+            </div>
+            {% if form.nome_solicitante.errors %}<div class="field-error">{% for e in form.nome_solicitante.errors %}{{ e }}{% endfor %}</div>{% endif %}
+          </div>
+          <div>
+            <label class="field-label">E-mail <span class="req">*</span></label>
+            <div class="field-wrap">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                <polyline points="22,6 12,13 2,6" />
+              </svg>
+              <input type="email" name="email" id="inp-email" class="field-input has-icon {% if form.email.errors %}field-input-error{% endif %}"
+                     placeholder="seu@email.com" value="{{ form.email.value|default:'' }}">
+            </div>
+            {% if form.email.errors %}<div class="field-error">{% for e in form.email.errors %}{{ e }}{% endfor %}</div>{% endif %}
+          </div>
+          <div>
+            <label class="field-label">Telefone (com DDD) <span class="req">*</span></label>
+            <div class="phone-wrap">
+              <div class="phone-flag">🇧🇷 +55</div>
+              <input type="tel" name="telefone" id="inp-tel" class="{% if form.telefone.errors %}field-input-error{% endif %}"
+                     placeholder="(11) 99999-9999" value="{{ form.telefone.value|default:'' }}">
+            </div>
+            {% if form.telefone.errors %}<div class="field-error">{% for e in form.telefone.errors %}{{ e }}{% endfor %}</div>{% endif %}
+          </div>
+        </div>
+
+        <div class="sec-divider" style="margin-top:20px;">
+          <div class="sec-divider-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+            </svg>
+            Dados da Certidão
+          </div>
+          <div class="sec-divider-line"></div>
+        </div>
+
+        <div class="attention-box">
+          <strong>Leia com atenção:</strong> Preencha os dados do pedido com cuidado, pois a busca e localização da
+          certidão serão exatamente pelos dados fornecidos.
+        </div>
+
+        <label class="field-label" style="margin-bottom:10px;">Formato da certidão <span class="req">*</span></label>
+        <div class="radio-group" style="margin-bottom:20px;">
+          <div class="radio-item">
+            <input type="radio" name="formato_certidao" id="f1" value="atualizada" {% if form.formato_certidao.value == 'atualizada' %}checked{% endif %}>
+            <label for="f1">Certidão de Imóvel Atualizada + Ônus Reais + Ações</label>
+          </div>
+          <div class="radio-item">
+            <input type="radio" name="formato_certidao" id="f2" value="inteiro-teor" {% if form.formato_certidao.value == 'inteiro-teor' or not form.formato_certidao.value %}checked{% endif %}>
+            <label for="f2">Certidão de Inteiro Teor do Imóvel</label>
+          </div>
+          <div class="radio-item">
+            <input type="radio" name="formato_certidao" id="f3" value="onus" {% if form.formato_certidao.value == 'onus' %}checked{% endif %}>
+            <label for="f3">Certidão de Ônus Reais</label>
+          </div>
+          <div class="radio-item">
+            <input type="radio" name="formato_certidao" id="f4" value="vintenaria" {% if form.formato_certidao.value == 'vintenaria' %}checked{% endif %}>
+            <label for="f4">Certidão Vintenária</label>
+          </div>
+        </div>
+
+        <div class="panel-row" id="panelIdentif">
+          <div class="panel-card {% if form.tipo_busca.value == 'matricula' or not form.tipo_busca.value %}is-selected{% endif %}" data-value="matricula"
+               onclick="selectPanel(this,'panelIdentif'); showSection('secMatricula'); hideSection('secEndereco')">
+            <div class="panel-card-title">Tenho a matrícula / transcrição</div>
+            <div class="panel-card-sub">Para os casos onde você possui a matrícula ou transcrição de um ou mais imóveis.</div>
+          </div>
+          <div class="panel-card {% if form.tipo_busca.value == 'endereco' %}is-selected{% endif %}" data-value="endereco"
+               onclick="selectPanel(this,'panelIdentif'); showSection('secEndereco'); hideSection('secMatricula')">
+            <div class="panel-card-title">Tenho o endereço do imóvel</div>
+            <div class="panel-card-sub">Para os casos onde você possui apenas o endereço completo do imóvel.</div>
+          </div>
+        </div>
+
+        <!-- Matrícula -->
+        <div id="secMatricula" {% if form.tipo_busca.value == 'endereco' %}style="display:none;"{% endif %}>
+          <label class="field-label" style="margin-bottom:9px;">Tipo de identificação</label>
+          <div class="radio-group" style="margin-bottom:14px;">
+            <div class="radio-item">
+              <input type="radio" name="tipo_identificacao" id="ti1" value="matricula" {% if form.tipo_identificacao.value == 'matricula' or not form.tipo_identificacao.value %}checked{% endif %}>
+              <label for="ti1">Tenho o número da matrícula do imóvel</label>
+            </div>
+            <div class="radio-item">
+              <input type="radio" name="tipo_identificacao" id="ti2" value="transcricao" {% if form.tipo_identificacao.value == 'transcricao' %}checked{% endif %}>
+              <label for="ti2">Tenho o número da transcrição do imóvel</label>
+            </div>
+          </div>
+
+          <label class="field-label" style="margin-bottom:6px;">
+            Adicionar matrícula(s) <span class="req">*</span>
+            <span style="text-transform:none;letter-spacing:0;font-weight:400;margin-left:8px;">
+              <a href="#" onclick="return false;" style="color:var(--accent);font-size:10.5px;">ⓘ Ver exemplo do número</a>
+            </span>
+          </label>
+          <div class="add-row">
+            <input type="text" id="inp-matricula" class="field-input" placeholder="1234567"
+                   onkeydown="if(event.key==='Enter'){event.preventDefault();addMatricula()}">
+            <button type="button" class="add-btn" onclick="addMatricula()">+ Adicionar</button>
+          </div>
+          <div class="matricula-list" id="matList"></div>
+          {% if form.matriculas.errors %}<div class="field-error">{% for e in form.matriculas.errors %}{{ e }}{% endfor %}</div>{% endif %}
+        </div>
+
+        <!-- Endereço do imóvel -->
+        <div id="secEndereco" {% if form.tipo_busca.value != 'endereco' %}style="display:none;"{% endif %}>
+          <div class="fields-row">
+            <div>
+              <label class="field-label">CEP do imóvel <span class="req">*</span></label>
+              <input type="text" name="cep_imovel" class="field-input {% if form.cep_imovel.errors %}field-input-error{% endif %}" placeholder="00000-000"
+                     value="{{ form.cep_imovel.value|default:'' }}">
+              {% if form.cep_imovel.errors %}<div class="field-error">{% for e in form.cep_imovel.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div>
+              <label class="field-label">Número <span class="req">*</span></label>
+              <input type="text" name="numero_imovel" class="field-input {% if form.numero_imovel.errors %}field-input-error{% endif %}" placeholder="Nº do imóvel"
+                     value="{{ form.numero_imovel.value|default:'' }}">
+              {% if form.numero_imovel.errors %}<div class="field-error">{% for e in form.numero_imovel.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+          </div>
+          <div class="fields-row">
+            <div>
+              <label class="field-label">Rua / Avenida <span class="req">*</span></label>
+              <input type="text" name="rua_imovel" class="field-input {% if form.rua_imovel.errors %}field-input-error{% endif %}" placeholder="Nome da rua"
+                     value="{{ form.rua_imovel.value|default:'' }}">
+              {% if form.rua_imovel.errors %}<div class="field-error">{% for e in form.rua_imovel.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+            <div>
+              <label class="field-label">Bairro <span class="req">*</span></label>
+              <input type="text" name="bairro_imovel" class="field-input {% if form.bairro_imovel.errors %}field-input-error{% endif %}" placeholder="Bairro"
+                     value="{{ form.bairro_imovel.value|default:'' }}">
+              {% if form.bairro_imovel.errors %}<div class="field-error">{% for e in form.bairro_imovel.errors %}{{ e }}{% endfor %}</div>{% endif %}
+            </div>
+          </div>
+          <div class="field-full">
+            <label class="field-label">Complemento</label>
+            <input type="text" name="complemento_imovel" class="field-input" placeholder="Apto, bloco, sala..."
+                   value="{{ form.complemento_imovel.value|default:'' }}">
+          </div>
+        </div>
+
+        <div class="field-full" style="margin-top:16px;">
+          <label class="field-label">Destino de utilização <span class="req">*</span></label>
+          <div class="field-wrap">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+            <input type="text" name="destino_utilizacao" id="inp-destino" class="field-input has-icon {% if form.destino_utilizacao.errors %}field-input-error{% endif %}"
+                   placeholder="Ex: compra e venda, processo judicial..."
+                   value="{{ form.destino_utilizacao.value|default:'' }}">
+          </div>
+          {% if form.destino_utilizacao.errors %}<div class="field-error">{% for e in form.destino_utilizacao.errors %}{{ e }}{% endfor %}</div>{% endif %}
+        </div>
+
+        <div class="step-actions">
+          <button type="button" class="btn-back" onclick="goToStep(2)">Voltar</button>
+          <button type="button" class="btn-next" onclick="nextStep3()">Avançar →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ STEP 4 — Dados do Cadastro ══ -->
+    <div class="step-block" id="step4">
+      <div class="step-header" onclick="editStep(4)">
+        <div class="step-num"><span class="step-num-inner">4</span></div>
+        <div class="step-meta">
+          <div class="step-title">Dados do seu Cadastro</div>
+          <div class="step-subtitle">Endereço de entrega</div>
+          <div class="step-summary" id="s4summary"></div>
+        </div>
+        <div class="step-edit-link">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+          </svg>
+          Editar
+        </div>
+      </div>
+      <div class="step-body">
+
         <div class="fields-row">
           <div>
-            <label class="field-label">Rua / Avenida <span class="req">*</span></label>
-            <input type="text" class="field-input" placeholder="Nome da rua">
+            <label class="field-label">País <span class="req">*</span></label>
+            <div class="field-wrap">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              <select name="pais" id="sel-pais" class="field-select has-icon">
+                <option value="Brasil" {% if form.pais.value == 'Brasil' or not form.pais.value %}selected{% endif %}>Brasil</option>
+                <option value="Portugal" {% if form.pais.value == 'Portugal' %}selected{% endif %}>Portugal</option>
+                <option value="Estados Unidos" {% if form.pais.value == 'Estados Unidos' %}selected{% endif %}>Estados Unidos</option>
+                <option value="Outro" {% if form.pais.value == 'Outro' %}selected{% endif %}>Outro</option>
+              </select>
+            </div>
           </div>
+          <div>
+            <label class="field-label">CEP <span class="req">*</span></label>
+            <div class="cep-row">
+              <input type="text" name="cep" id="inp-cep" class="field-input {% if form.cep.errors %}field-input-error{% endif %}" placeholder="00000-000"
+                     oninput="maskCep(this)" value="{{ form.cep.value|default:'' }}">
+              <button type="button" class="cep-btn" onclick="completarCep()">Completar CEP</button>
+            </div>
+            {% if form.cep.errors %}<div class="field-error">{% for e in form.cep.errors %}{{ e }}{% endfor %}</div>{% endif %}
+          </div>
+        </div>
+
+        <div class="fields-row">
           <div>
             <label class="field-label">Bairro <span class="req">*</span></label>
-            <input type="text" class="field-input" placeholder="Bairro">
+            <div class="field-wrap">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              <input type="text" name="bairro" id="inp-bairro" class="field-input has-icon {% if form.bairro.errors %}field-input-error{% endif %}"
+                     placeholder="Bairro para entrega" value="{{ form.bairro.value|default:'' }}">
+            </div>
+            {% if form.bairro.errors %}<div class="field-error">{% for e in form.bairro.errors %}{{ e }}{% endfor %}</div>{% endif %}
+          </div>
+          <div>
+            <label class="field-label">Rua / Avenida <span class="req">*</span></label>
+            <div class="field-wrap">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              <input type="text" name="rua" id="inp-rua" class="field-input has-icon {% if form.rua.errors %}field-input-error{% endif %}"
+                     placeholder="Rua/avenida para entrega" value="{{ form.rua.value|default:'' }}">
+            </div>
+            {% if form.rua.errors %}<div class="field-error">{% for e in form.rua.errors %}{{ e }}{% endfor %}</div>{% endif %}
           </div>
         </div>
-        <div class="field-full">
-          <label class="field-label">Complemento</label>
-          <input type="text" class="field-input" placeholder="Apto, bloco, sala...">
-        </div>
-      </div>
 
-      <div class="field-full" style="margin-top:16px;">
-        <label class="field-label">Destino de utilização <span class="req">*</span></label>
-        <div class="field-wrap">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          <input type="text" id="inp-destino" class="field-input has-icon" placeholder="Ex: compra e venda, processo judicial...">
+        <div class="fields-row">
+          <div>
+            <label class="field-label">Número <span class="req">*</span></label>
+            <div class="field-wrap">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              <input type="text" name="numero" id="inp-numero" class="field-input has-icon {% if form.numero.errors %}field-input-error{% endif %}"
+                     placeholder="Nº da rua" value="{{ form.numero.value|default:'' }}">
+            </div>
+            {% if form.numero.errors %}<div class="field-error">{% for e in form.numero.errors %}{{ e }}{% endfor %}</div>{% endif %}
+          </div>
+          <div>
+            <label class="field-label">Complemento</label>
+            <div class="field-wrap">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              <input type="text" name="complemento" id="inp-complemento" class="field-input has-icon"
+                     placeholder="Apto, bloco..." value="{{ form.complemento.value|default:'' }}">
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div class="step-actions">
-        <button class="btn-back" onclick="goToStep(2)">Voltar</button>
-        <button class="btn-next" onclick="nextStep3()">Avançar →</button>
+        <div class="info-box" id="boxEndCadastro" style="display:none;">
+          <div>
+            <strong>Endereço de Cadastro</strong>
+            <span id="txtEndCadastro"></span>
+          </div>
+          <span class="info-box-edit"
+                onclick="document.getElementById('boxEndCadastro').style.display='none'">✎ Editar endereço</span>
+        </div>
+
+        <div class="sec-divider" style="margin-top:20px;">
+          <div class="sec-divider-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="1" y="3" width="15" height="13" />
+              <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+              <circle cx="5.5" cy="18.5" r="2.5" />
+              <circle cx="18.5" cy="18.5" r="2.5" />
+            </svg>
+            Envio e prazos
+          </div>
+          <div class="sec-divider-line"></div>
+        </div>
+
+        <div class="delivery-option">
+          <input type="radio" name="envio" checked>
+          <div class="delivery-body">
+            <div class="delivery-title">Disponível entre 2 e 12 dias úteis</div>
+            <div class="delivery-sub">Envio por e-mail ✉</div>
+            <div class="delivery-note">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+              Importante: Certidões Eletrônicas e de imóveis serão enviadas para o seu e-mail.
+            </div>
+          </div>
+          <div class="delivery-price">Grátis</div>
+        </div>
+
+        <div class="step-actions">
+          <button type="button" class="btn-back" onclick="goToStep(3)">Voltar</button>
+          <button type="button" class="btn-finish" onclick="showConfirmModal()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="9" cy="21" r="1" />
+              <circle cx="20" cy="21" r="1" />
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+            </svg>
+            Ir para o pagamento
+          </button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- ══ STEP 4 — Dados do Cadastro ══ -->
-  <div class="step-block" id="step4">
-    <div class="step-header" onclick="editStep(4)">
-      <div class="step-num"><span class="step-num-inner">4</span></div>
-      <div class="step-meta">
-        <div class="step-title">Dados do seu Cadastro</div>
-        <div class="step-subtitle">Endereço de entrega</div>
-        <div class="step-summary" id="s4summary"></div>
-      </div>
-      <div class="step-edit-link">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        Editar
-      </div>
-    </div>
-    <div class="step-body">
+  </div><!-- /form-wrapper -->
 
-      <div class="fields-row">
-        <div>
-          <label class="field-label">País <span class="req">*</span></label>
-          <div class="field-wrap">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <select class="field-select has-icon">
-              <option selected>Brasil</option>
-              <option>Portugal</option>
-              <option>Estados Unidos</option>
-              <option>Outro</option>
-            </select>
-          </div>
+  <!-- ══ MODAL DE CONFIRMAÇÃO ══ -->
+  <div id="confirmModal"
+       style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:999;align-items:center;justify-content:center;padding:16px;">
+    <div style="background:var(--white);border:1px solid var(--rule);width:100%;max-width:480px;overflow:hidden;">
+
+      <div style="background:var(--paper);border-bottom:1px solid var(--rule);padding:14px 22px;display:flex;align-items:center;gap:8px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             style="color:var(--accent);flex-shrink:0">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+        <span style="font-size:13px;font-weight:600;color:var(--ink);">Se os dados estiverem corretos, prossiga.</span>
+      </div>
+
+      <div style="padding:22px;">
+        <p style="font-size:10px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--ink-light);text-align:center;margin-bottom:4px;">
+          Matrícula(s) do imóvel</p>
+        <p id="modal-mats"
+           style="font-size:22px;font-weight:700;color:var(--ink);text-align:center;margin-bottom:18px;letter-spacing:.04em;">
+          —</p>
+
+        <p style="font-size:10px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--ink-light);text-align:center;margin-bottom:6px;">
+          Cartório de registro</p>
+        <div id="modal-cartorio"
+             style="background:var(--paper);border:1px solid var(--rule);padding:9px 16px;font-size:12px;font-weight:600;color:var(--ink-light);text-align:center;margin-bottom:18px;letter-spacing:.04em;">
         </div>
-        <div>
-          <label class="field-label">CEP <span class="req">*</span></label>
-          <div class="cep-row">
-            <input type="text" id="inp-cep" class="field-input" placeholder="00000-000" oninput="maskCep(this)">
-            <button class="cep-btn" onclick="completarCep()">Completar CEP</button>
-          </div>
+
+        <div class="attention-box" style="margin-bottom:0;">
+          <strong>Importante:</strong> A certidão será emitida de acordo com os dados de matrícula ou transcrição
+          informados, para o cartório selecionado. Confirme todas as informações antes de continuar.
         </div>
       </div>
 
-      <div class="fields-row">
-        <div>
-          <label class="field-label">Bairro <span class="req">*</span></label>
-          <div class="field-wrap">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <input type="text" id="inp-bairro" class="field-input has-icon" placeholder="Bairro para entrega">
-          </div>
-        </div>
-        <div>
-          <label class="field-label">Rua / Avenida <span class="req">*</span></label>
-          <div class="field-wrap">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <input type="text" id="inp-rua" class="field-input has-icon" placeholder="Rua/avenida para entrega">
-          </div>
-        </div>
-      </div>
-
-      <div class="fields-row">
-        <div>
-          <label class="field-label">Número <span class="req">*</span></label>
-          <div class="field-wrap">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <input type="text" id="inp-numero" class="field-input has-icon" placeholder="Nº da rua">
-          </div>
-        </div>
-        <div>
-          <label class="field-label">Complemento</label>
-          <div class="field-wrap">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <input type="text" id="inp-complemento" class="field-input has-icon" placeholder="Apto, bloco...">
-          </div>
-        </div>
-      </div>
-
-      <div class="info-box" id="boxEndCadastro" style="display:none;">
-        <div>
-          <strong>Endereço de Cadastro</strong>
-          <span id="txtEndCadastro"></span>
-        </div>
-        <span class="info-box-edit" onclick="document.getElementById('boxEndCadastro').style.display='none'">✎ Editar endereço</span>
-      </div>
-
-      <div class="sec-divider" style="margin-top:20px;">
-        <div class="sec-divider-label">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-          Envio e prazos
-        </div>
-        <div class="sec-divider-line"></div>
-      </div>
-
-      <div class="delivery-option">
-        <input type="radio" name="envio" checked>
-        <div class="delivery-body">
-          <div class="delivery-title">Disponível entre 2 e 12 dias úteis</div>
-          <div class="delivery-sub">Envio por e-mail ✉</div>
-          <div class="delivery-note">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            Importante: Certidões Eletrônicas e de imóveis serão enviadas para o seu e-mail.
-          </div>
-        </div>
-        <div class="delivery-price">Grátis</div>
-      </div>
-
-      <div class="step-actions">
-        <button class="btn-back" onclick="goToStep(3)">Voltar</button>
-        <button class="btn-more">Pedir mais certidões</button>
-        <button class="btn-finish">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-          Ir para o pagamento
+      <div class="step-actions" style="padding:0 22px 22px;border-top:none;margin-top:0;">
+        <button type="button" class="btn-back" onclick="closeConfirmModal()">Editar matrícula(s)</button>
+        <button type="submit" class="btn-finish">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          Continuar pedido
         </button>
       </div>
+
     </div>
   </div>
 
-</div>
+</form>
+
+<style>
+  .field-error {
+    color: #dc2626;
+    font-size: 11px;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .field-error::before {
+    content: '⚠';
+    font-size: 10px;
+  }
+  .field-input-error {
+    border-color: #dc2626 !important;
+    background-color: #fff5f5 !important;
+  }
+</style>
 
 <script>
-let activeStep = 1;
-const matriculas = [];
+  let activeStep = 1;
+  const matriculas = [];
 
-/* ── navigation ── */
-function markDone(n) {
-  const el = document.getElementById('step' + n);
-  el.classList.remove('is-active');
-  el.classList.add('is-done');
-}
-
-function markActive(n) {
-  const el = document.getElementById('step' + n);
-  el.classList.remove('is-done');
-  el.classList.add('is-active');
-  activeStep = n;
-  setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
-}
-
-function goToStep(n) {
-  markDone(activeStep);
-  markActive(n);
-}
-
-function editStep(n) {
-  const el = document.getElementById('step' + n);
-  if (!el.classList.contains('is-done')) return;
-  const cur = document.querySelector('.step-block.is-active');
-  if (cur) { cur.classList.remove('is-active'); cur.classList.add('is-done'); }
-  markActive(n);
-}
-
-/* ── cards ── */
-function selectCard(el, groupId) {
-  document.querySelectorAll('#' + groupId + ' .option-card').forEach(c => c.classList.remove('is-selected'));
-  el.classList.add('is-selected');
-}
-
-function selectPanel(el, groupId) {
-  document.querySelectorAll('#' + groupId + ' .panel-card').forEach(c => c.classList.remove('is-selected'));
-  el.classList.add('is-selected');
-}
-
-function showSection(id) { document.getElementById(id).style.display = ''; }
-function hideSection(id) { document.getElementById(id).style.display = 'none'; }
-
-/* ── step 1 ── */
-function nextStep1() {
-  const sel = document.querySelector('#cardsTipo .option-card.is-selected');
-  document.getElementById('s1summary').textContent = sel ? sel.querySelector('.option-card-title').textContent : '—';
-  goToStep(2);
-}
-
-/* ── step 2 ── */
-const cidadesPorEstado = {
-  'MG - Minas Gerais': ['Belo Horizonte','Betim','Contagem','Divinópolis','Governador Valadares','Ipatinga','Juiz de Fora','Montes Claros','Perdigão','Pitangui','Poços de Caldas','Ribeirão das Neves','Sete Lagoas','Uberlândia','Uberaba'],
-  'SP - São Paulo': ['Campinas','Guarulhos','Osasco','Ribeirão Preto','Santo André','São Bernardo do Campo','São José dos Campos','São Paulo','Sorocaba'],
-  'RJ - Rio de Janeiro': ['Belford Roxo','Duque de Caxias','Niterói','Nova Iguaçu','Petrópolis','Rio de Janeiro','São Gonçalo'],
-  'RS - Rio Grande do Sul': ['Canoas','Caxias do Sul','Gravataí','Novo Hamburgo','Pelotas','Porto Alegre','Santa Maria'],
-  'PR - Paraná': ['Cascavel','Curitiba','Foz do Iguaçu','Londrina','Maringá','Ponta Grossa','São José dos Pinhais'],
-  'BA - Bahia': ['Camaçari','Feira de Santana','Ilhéus','Itabuna','Juazeiro','Salvador','Vitória da Conquista'],
-};
-
-function onEstadoChange() {
-  const estado = document.getElementById('sel-estado').value;
-  const selC = document.getElementById('sel-cidade');
-  const selCar = document.getElementById('sel-cartorio');
-  selC.innerHTML = '<option value="">Selecione a cidade...</option>';
-  selCar.innerHTML = '<option value="">Selecione a cidade primeiro...</option>';
-  const cidades = cidadesPorEstado[estado] || [];
-  cidades.forEach(c => {
-    const o = document.createElement('option');
-    o.textContent = c;
-    selC.appendChild(o);
-  });
-}
-
-function onCidadeChange() {
-  const cidade = document.getElementById('sel-cidade').value;
-  const sel = document.getElementById('sel-cartorio');
-  sel.innerHTML = '<option value="">Selecione o cartório...</option>';
-  if (cidade) {
-    ['OFÍCIO DO REGISTRO DE IMÓVEIS','1º CARTÓRIO DE REGISTRO DE IMÓVEIS','2º CARTÓRIO DE REGISTRO DE IMÓVEIS','CARTÓRIO DE NOTAS E REGISTRO']
-      .forEach(c => { const o = document.createElement('option'); o.textContent = c; sel.appendChild(o); });
+  /* ── navigation ── */
+  function markDone(n) {
+    const el = document.getElementById('step' + n);
+    el.classList.remove('is-active');
+    el.classList.add('is-done');
   }
-}
 
-function nextStep2() {
-  const estado = document.getElementById('sel-estado').value;
-  const cidade = document.getElementById('sel-cidade').value;
-  const cartorio = document.getElementById('sel-cartorio').value;
-  if (!estado || !cidade || !cartorio) { alert('Preencha todos os campos obrigatórios.'); return; }
-  document.getElementById('s2summary').textContent = estado.split(' - ')[0] + ' › ' + cidade + ' · ' + cartorio;
-  goToStep(3);
-}
+  function markActive(n) {
+    const el = document.getElementById('step' + n);
+    el.classList.remove('is-done');
+    el.classList.add('is-active');
+    activeStep = n;
+    setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+  }
 
-/* ── step 3 ── */
-function addMatricula() {
-  const inp = document.getElementById('inp-matricula');
-  const val = inp.value.trim();
-  if (!val) return;
-  matriculas.push(val);
-  inp.value = '';
-  renderMatriculas();
-}
+  function goToStep(n) {
+    markDone(activeStep);
+    markActive(n);
+  }
 
-function removeMatricula(i) {
-  matriculas.splice(i, 1);
-  renderMatriculas();
-}
+  function editStep(n) {
+    const el = document.getElementById('step' + n);
+    if (!el.classList.contains('is-done')) return;
+    const cur = document.querySelector('.step-block.is-active');
+    if (cur) { cur.classList.remove('is-active'); cur.classList.add('is-done'); }
+    markActive(n);
+  }
 
-function renderMatriculas() {
-  document.getElementById('matList').innerHTML = matriculas.map((m, i) => `
+  /* ── cards ── */
+  function selectCard(el, groupId) {
+    document.querySelectorAll('#' + groupId + ' .option-card').forEach(c => c.classList.remove('is-selected'));
+    el.classList.add('is-selected');
+    if (groupId === 'cardsTipo') {
+      document.getElementById('id_tipo_certidao').value = el.dataset.value;
+    }
+  }
+
+  function selectPanel(el, groupId) {
+    document.querySelectorAll('#' + groupId + ' .panel-card').forEach(c => c.classList.remove('is-selected'));
+    el.classList.add('is-selected');
+    if (groupId === 'panelIdentif') {
+      document.getElementById('id_tipo_busca').value = el.dataset.value;
+    }
+  }
+
+  function showSection(id) { document.getElementById(id).style.display = ''; }
+  function hideSection(id) { document.getElementById(id).style.display = 'none'; }
+
+  /* ── step 1 ── */
+  function nextStep1() {
+    const sel = document.querySelector('#cardsTipo .option-card.is-selected');
+    document.getElementById('s1summary').textContent = sel ? sel.querySelector('.option-card-title').textContent : '—';
+    goToStep(2);
+  }
+
+  /* ── step 2 ── */
+  const cidadesPorEstado = {
+    'MG - Minas Gerais': ['Belo Horizonte', 'Betim', 'Contagem', 'Divinópolis', 'Governador Valadares', 'Ipatinga', 'Juiz de Fora', 'Montes Claros', 'Perdigão', 'Pitangui', 'Poços de Caldas', 'Ribeirão das Neves', 'Sete Lagoas', 'Uberlândia', 'Uberaba'],
+    'SP - São Paulo': ['Campinas', 'Guarulhos', 'Osasco', 'Ribeirão Preto', 'Santo André', 'São Bernardo do Campo', 'São José dos Campos', 'São Paulo', 'Sorocaba'],
+    'RJ - Rio de Janeiro': ['Belford Roxo', 'Duque de Caxias', 'Niterói', 'Nova Iguaçu', 'Petrópolis', 'Rio de Janeiro', 'São Gonçalo'],
+    'RS - Rio Grande do Sul': ['Canoas', 'Caxias do Sul', 'Gravataí', 'Novo Hamburgo', 'Pelotas', 'Porto Alegre', 'Santa Maria'],
+    'PR - Paraná': ['Cascavel', 'Curitiba', 'Foz do Iguaçu', 'Londrina', 'Maringá', 'Ponta Grossa', 'São José dos Pinhais'],
+    'BA - Bahia': ['Camaçari', 'Feira de Santana', 'Ilhéus', 'Itabuna', 'Juazeiro', 'Salvador', 'Vitória da Conquista'],
+  };
+
+  function onEstadoChange() {
+    const estado = document.getElementById('sel-estado').value;
+    const selC = document.getElementById('sel-cidade');
+    const selCar = document.getElementById('sel-cartorio');
+    selC.innerHTML = '<option value="">Selecione a cidade...</option>';
+    selCar.innerHTML = '<option value="">Selecione a cidade primeiro...</option>';
+    const cidades = cidadesPorEstado[estado] || [];
+    cidades.forEach(c => {
+      const o = document.createElement('option');
+      o.textContent = c;
+      selC.appendChild(o);
+    });
+  }
+
+  function onCidadeChange() {
+    const cidade = document.getElementById('sel-cidade').value;
+    const sel = document.getElementById('sel-cartorio');
+    sel.innerHTML = '<option value="">Selecione o cartório...</option>';
+    if (cidade) {
+      ['OFÍCIO DO REGISTRO DE IMÓVEIS', '1º CARTÓRIO DE REGISTRO DE IMÓVEIS', '2º CARTÓRIO DE REGISTRO DE IMÓVEIS', 'CARTÓRIO DE NOTAS E REGISTRO']
+        .forEach(c => { const o = document.createElement('option'); o.textContent = c; sel.appendChild(o); });
+    }
+  }
+
+  function nextStep2() {
+    const estado = document.getElementById('sel-estado').value;
+    const cidade = document.getElementById('sel-cidade').value;
+    const cartorio = document.getElementById('sel-cartorio').value;
+    if (!estado || !cidade || !cartorio) { alert('Preencha todos os campos obrigatórios.'); return; }
+    document.getElementById('s2summary').textContent = estado.split(' - ')[0] + ' › ' + cidade + ' · ' + cartorio;
+    goToStep(3);
+  }
+
+  /* ── step 3 ── */
+  function addMatricula() {
+    const inp = document.getElementById('inp-matricula');
+    const val = inp.value.trim();
+    if (!val) return;
+    matriculas.push(val);
+    inp.value = '';
+    renderMatriculas();
+  }
+
+  function removeMatricula(i) {
+    matriculas.splice(i, 1);
+    renderMatriculas();
+  }
+
+  function renderMatriculas() {
+    document.getElementById('matList').innerHTML = matriculas.map((m, i) => `
     <div class="matricula-item">
       <span class="mat-num">${i + 1}</span>
       <span class="mat-val">${m}</span>
-      <button class="mat-del" onclick="removeMatricula(${i})">
+      <button type="button" class="mat-del" onclick="removeMatricula(${i})">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6M9 6V4h6v2"/></svg>
       </button>
     </div>`).join('');
-}
+    document.getElementById('id_matriculas').value = matriculas.join(',');
+  }
 
-function nextStep3() {
-  const nome = document.getElementById('inp-nome').value.trim();
-  const email = document.getElementById('inp-email').value.trim();
-  const tel = document.getElementById('inp-tel').value.trim();
-  const destino = document.getElementById('inp-destino').value.trim();
-  if (!nome || !email || !tel || !destino) { alert('Preencha todos os campos obrigatórios.'); return; }
-  document.getElementById('s3summary').textContent = nome + ' · ' + email;
-  goToStep(4);
-}
+  function nextStep3() {
+    const nome = document.getElementById('inp-nome').value.trim();
+    const email = document.getElementById('inp-email').value.trim();
+    const tel = document.getElementById('inp-tel').value.trim();
+    const destino = document.getElementById('inp-destino').value.trim();
+    if (!nome || !email || !tel || !destino) { alert('Preencha todos os campos obrigatórios.'); return; }
+    document.getElementById('s3summary').textContent = nome + ' · ' + email;
+    goToStep(4);
+  }
 
-/* ── step 4 ── */
-function maskCep(el) {
-  let v = el.value.replace(/\D/g, '').slice(0, 8);
-  if (v.length > 5) v = v.slice(0, 5) + '-' + v.slice(5);
-  el.value = v;
-}
+  /* ── step 4 ── */
+  function maskCep(el) {
+    let v = el.value.replace(/\D/g, '').slice(0, 8);
+    if (v.length > 5) v = v.slice(0, 5) + '-' + v.slice(5);
+    el.value = v;
+  }
 
-function completarCep() {
-  const cep = document.getElementById('inp-cep').value.replace(/\D/g, '');
-  if (cep.length !== 8) { alert('CEP inválido.'); return; }
-  document.getElementById('inp-bairro').value = 'Centro';
-  document.getElementById('inp-rua').value = 'Rua das Flores';
-  document.getElementById('txtEndCadastro').textContent = ' - Centro - CEP: ' + cep.slice(0,5) + '-' + cep.slice(5);
-  document.getElementById('boxEndCadastro').style.display = 'flex';
-}
+  function completarCep() {
+    const cep = document.getElementById('inp-cep').value.replace(/\D/g, '');
+    if (cep.length !== 8) { alert('CEP inválido.'); return; }
+    document.getElementById('inp-bairro').value = 'Centro';
+    document.getElementById('inp-rua').value = 'Rua das Flores';
+    document.getElementById('txtEndCadastro').textContent = ' - Centro - CEP: ' + cep.slice(0, 5) + '-' + cep.slice(5);
+    document.getElementById('boxEndCadastro').style.display = 'flex';
+  }
+
+  /* ── modal de confirmação ── */
+  function showConfirmModal() {
+    const mats = matriculas.length ? matriculas.join(', ') : '—';
+    const cartorio = document.getElementById('sel-cartorio').value || '—';
+    const cidade = document.getElementById('sel-cidade').value || '';
+    const estado = (document.getElementById('sel-estado').value || '').split(' - ')[0];
+
+    document.getElementById('modal-mats').textContent = mats;
+    document.getElementById('modal-cartorio').textContent =
+      cartorio.toUpperCase() + (cidade ? ' DE ' + cidade.toUpperCase() : '') + (estado ? ' - ' + estado : '');
+
+    const modal = document.getElementById('confirmModal');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeConfirmModal() {
+    document.getElementById('confirmModal').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('confirmModal').addEventListener('click', function (e) {
+    if (e.target === this) closeConfirmModal();
+  });
+
+  /* ── Restaurar estado após POST com erros ── */
+  document.addEventListener('DOMContentLoaded', function () {
+
+    // 1) Restaurar selects dinâmicos
+    {% if form.estado.value %}
+    document.getElementById('sel-estado').value = "{{ form.estado.value|escapejs }}";
+    onEstadoChange();
+    {% endif %}
+    {% if form.cidade.value %}
+    document.getElementById('sel-cidade').value = "{{ form.cidade.value|escapejs }}";
+    onCidadeChange();
+    {% endif %}
+    {% if form.cartorio.value %}
+    document.getElementById('sel-cartorio').value = "{{ form.cartorio.value|escapejs }}";
+    {% endif %}
+
+    // 2) Restaurar matrículas
+    var matsValue = document.getElementById('id_matriculas').value;
+    if (matsValue) {
+      matsValue.split(',').forEach(function (m) {
+        if (m.trim()) matriculas.push(m.trim());
+      });
+      renderMatriculas();
+    }
+
+    // 3) Se houver erros, detectar o step mais avançado com erro e navegar até ele
+    {% if form.errors %}
+      var targetStep = 1;
+
+      if (document.querySelector('#step2 .field-error')) targetStep = 2;
+      if (document.querySelector('#step3 .field-error')) targetStep = 3;
+      if (document.querySelector('#step4 .field-error')) targetStep = 4;
+
+      // Marcar steps anteriores como concluídos com seus summaries
+      for (var i = 1; i < targetStep; i++) {
+        var stepEl = document.getElementById('step' + i);
+        stepEl.classList.remove('is-active');
+        stepEl.classList.add('is-done');
+
+        if (i === 1) {
+          var selCard = document.querySelector('#cardsTipo .option-card.is-selected');
+          if (selCard) document.getElementById('s1summary').textContent = selCard.querySelector('.option-card-title').textContent;
+        }
+        if (i === 2) {
+          var est = document.getElementById('sel-estado').value;
+          var cid = document.getElementById('sel-cidade').value;
+          var car = document.getElementById('sel-cartorio').value;
+          if (est && cid && car) {
+            document.getElementById('s2summary').textContent = est.split(' - ')[0] + ' › ' + cid + ' · ' + car;
+          }
+        }
+        if (i === 3) {
+          var nome = document.getElementById('inp-nome').value;
+          var eml  = document.getElementById('inp-email').value;
+          if (nome && eml) document.getElementById('s3summary').textContent = nome + ' · ' + eml;
+        }
+      }
+
+      // Ativar o step com erro
+      var targetEl = document.getElementById('step' + targetStep);
+      targetEl.classList.remove('is-done');
+      targetEl.classList.add('is-active');
+      activeStep = targetStep;
+
+      setTimeout(function () {
+        targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    {% endif %}
+  });
 </script>
 
 {% endblock content %}
