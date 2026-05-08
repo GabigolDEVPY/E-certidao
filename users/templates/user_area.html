@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Área do Cliente{% endblock %}
+
+{% block content %}
+<div class="form-wrapper">
+
+  <!-- Header -->
+  <div class="content-header">
+    <h1>Área do Cliente</h1>
+    <span class="content-count">{{ user.username }}</span>
+  </div>
+
+  <!-- Info do usuário -->
+  <div class="info-box" style="margin-bottom:24px;">
+    <div>
+      <strong>{{ user.get_full_name|default:user.username }}</strong>
+      CPF/CNPJ: {{ user.cpf_cnpj }}<br>
+      E-mail: {{ user.email }}<br>
+      Telefone: {{ user.telefone }}
+    </div>
+  </div>
+
+  <!-- Menu de serviços -->
+  <div class="service-list">
+
+    <!-- Meus Pedidos -->
+    <div class="service-card" onclick="document.getElementById('modal-pedidos').classList.add('active');document.documentElement.classList.add('modal-lock')">
+      <div class="service-icon">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      </div>
+      <span class="service-title">Meus Pedidos</span>
+      <span class="service-arrow">&#8594;</span>
+    </div>
+
+    <!-- Pagar Pedido Pendente -->
+    <div class="service-card" onclick="document.getElementById('modal-pagar').classList.add('active');document.documentElement.classList.add('modal-lock')">
+      <div class="service-icon">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>
+      </div>
+      <span class="service-title">Pagar Pedido Pendente</span>
+      <span class="service-arrow">&#8594;</span>
+    </div>
+
+    <!-- Alterar Situação do Pedido -->
+    <div class="service-card" onclick="document.getElementById('modal-status').classList.add('active');document.documentElement.classList.add('modal-lock')">
+      <div class="service-icon">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 2v4m0 12v4m10-10h-4M6 12H2m15.07-5.07l-2.83 2.83M9.76 14.24l-2.83 2.83m11.14 0l-2.83-2.83M9.76 9.76L6.93 6.93"/></svg>
+      </div>
+      <span class="service-title">Alterar Situação do Pedido</span>
+      <span class="service-arrow">&#8594;</span>
+    </div>
+
+    <!-- Alterar Senha -->
+    <div class="service-card" onclick="document.getElementById('modal-senha').classList.add('active');document.documentElement.classList.add('modal-lock')">
+      <div class="service-icon">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+      </div>
+      <span class="service-title">Alterar Senha</span>
+      <span class="service-arrow">&#8594;</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- MODAL: Meus Pedidos                        -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="custom-overlay" id="modal-pedidos">
+  <div class="custom-modal site-modal">
+    <button class="modal-x" onclick="fecharModal('modal-pedidos')">&times;</button>
+    <div class="modal-tag">Pedidos</div>
+    <h2 class="modal-title-custom">Meus Pedidos</h2>
+    <p class="modal-sub">Acompanhe todos os seus pedidos realizados.</p>
+
+    {% if pedidos %}
+      {% for pedido in pedidos %}
+        <div class="info-box">
+          <div>
+            <strong>Pedido #{{ pedido.id }}</strong>
+            Data: {{ pedido.criado_em|date:"d/m/Y" }}<br>
+            Total: R$ {{ pedido.total|floatformat:2 }}<br>
+            Status:
+            {% if pedido.status == 'pendente' %}
+              <span style="color:var(--accent);font-weight:600;">Pendente</span>
+            {% elif pedido.status == 'pago' %}
+              <span style="color:#2e7d32;font-weight:600;">Pago</span>
+            {% elif pedido.status == 'enviado' %}
+              <span style="color:var(--ink);font-weight:600;">Enviado</span>
+            {% elif pedido.status == 'entregue' %}
+              <span style="color:var(--ink-light);font-weight:600;">Entregue</span>
+            {% elif pedido.status == 'cancelado' %}
+              <span style="color:#999;font-weight:600;">Cancelado</span>
+            {% else %}
+              <span style="font-weight:600;">{{ pedido.get_status_display }}</span>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="attention-box">
+        Você ainda não realizou nenhum pedido.
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- MODAL: Pagar Pedido Pendente               -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="custom-overlay" id="modal-pagar">
+  <div class="custom-modal site-modal">
+    <button class="modal-x" onclick="fecharModal('modal-pagar')">&times;</button>
+    <div class="modal-tag">Pagamento</div>
+    <h2 class="modal-title-custom">Pagar Pedido Pendente</h2>
+    <p class="modal-sub">Selecione um pedido pendente para realizar o pagamento.</p>
+
+    {% if pedidos_pendentes %}
+      {% for pedido in pedidos_pendentes %}
+        <div class="info-box">
+          <div>
+            <strong>Pedido #{{ pedido.id }}</strong>
+            Data: {{ pedido.criado_em|date:"d/m/Y" }}<br>
+            Total: R$ {{ pedido.total|floatformat:2 }}
+          </div>
+          <a href="{% url 'pagar_pedido' pedido.id %}" class="info-box-edit">Pagar &#8594;</a>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="attention-box">
+        Nenhum pedido pendente de pagamento.
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- MODAL: Alterar Situação do Pedido          -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="custom-overlay" id="modal-status">
+  <div class="custom-modal site-modal">
+    <button class="modal-x" onclick="fecharModal('modal-status')">&times;</button>
+    <div class="modal-tag">Status</div>
+    <h2 class="modal-title-custom">Alterar Situação do Pedido</h2>
+    <p class="modal-sub">Selecione o pedido e altere sua situação.</p>
+
+    {% if pedidos %}
+      {% for pedido in pedidos %}
+        <div class="step-block is-active" style="margin-bottom:8px;">
+          <div class="step-header" style="padding:12px 16px;">
+            <div class="step-num"><span class="step-num-inner">{{ pedido.id }}</span></div>
+            <div class="step-meta">
+              <div class="step-title">Pedido #{{ pedido.id }} &mdash; R$ {{ pedido.total|floatformat:2 }}</div>
+              <div class="step-subtitle">{{ pedido.criado_em|date:"d/m/Y" }}</div>
+            </div>
+          </div>
+          <div class="step-body" style="display:block;padding:12px 16px;">
+            <form method="POST" action="{% url 'alterar_status_pedido' pedido.id %}">
+              {% csrf_token %}
+              <label class="field-label">Novo Status</label>
+              <select name="status" class="field-select" style="margin-bottom:10px;">
+                <option value="pendente" {% if pedido.status == 'pendente' %}selected{% endif %}>Pendente</option>
+                <option value="pago" {% if pedido.status == 'pago' %}selected{% endif %}>Pago</option>
+                <option value="enviado" {% if pedido.status == 'enviado' %}selected{% endif %}>Enviado</option>
+                <option value="entregue" {% if pedido.status == 'entregue' %}selected{% endif %}>Entregue</option>
+                <option value="cancelado" {% if pedido.status == 'cancelado' %}selected{% endif %}>Cancelado</option>
+              </select>
+              <button type="submit" class="submit-btn" style="padding:10px 18px;font-size:12px;">Salvar Status</button>
+            </form>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="attention-box">
+        Nenhum pedido encontrado.
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- MODAL: Alterar Senha                       -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="custom-overlay" id="modal-senha">
+  <div class="custom-modal site-modal">
+    <button class="modal-x" onclick="fecharModal('modal-senha')">&times;</button>
+    <div class="modal-tag">Segurança</div>
+    <h2 class="modal-title-custom">Alterar Senha</h2>
+    <p class="modal-sub">Preencha os campos abaixo para definir uma nova senha.</p>
+
+    <form method="POST" action="{% url 'alterar_senha' %}" class="site-form">
+      {% csrf_token %}
+
+      <label>
+        Senha Atual
+        <input type="password" name="senha_atual" required>
+      </label>
+
+      <label>
+        Nova Senha
+        <input type="password" name="nova_senha" required>
+      </label>
+
+      <label>
+        Confirmar Nova Senha
+        <input type="password" name="confirmar_senha" required>
+      </label>
+
+      <button type="submit" class="submit-btn">Alterar Senha</button>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function fecharModal(id) {
+    document.getElementById(id).classList.remove('active');
+    document.documentElement.classList.remove('modal-lock');
+  }
+
+  // Fechar modal ao clicar no overlay (fora do card)
+  document.querySelectorAll('.custom-overlay').forEach(function(overlay) {
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) {
+        overlay.classList.remove('active');
+        document.documentElement.classList.remove('modal-lock');
+      }
+    });
+  });
+</script>
+{% endblock %}

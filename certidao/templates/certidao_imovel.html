@@ -264,25 +264,6 @@
           certidão serão exatamente pelos dados fornecidos.
         </div>
 
-        <label class="field-label" style="margin-bottom:10px;">Formato da certidão <span class="req">*</span></label>
-        <div class="radio-group" style="margin-bottom:20px;">
-          <div class="radio-item">
-            <input type="radio" name="formato_certidao" id="f1" value="atualizada" {% if form.formato_certidao.value == 'atualizada' %}checked{% endif %}>
-            <label for="f1">Certidão de Imóvel Atualizada + Ônus Reais + Ações</label>
-          </div>
-          <div class="radio-item">
-            <input type="radio" name="formato_certidao" id="f2" value="inteiro-teor" {% if form.formato_certidao.value == 'inteiro-teor' or not form.formato_certidao.value %}checked{% endif %}>
-            <label for="f2">Certidão de Inteiro Teor do Imóvel</label>
-          </div>
-          <div class="radio-item">
-            <input type="radio" name="formato_certidao" id="f3" value="onus" {% if form.formato_certidao.value == 'onus' %}checked{% endif %}>
-            <label for="f3">Certidão de Ônus Reais</label>
-          </div>
-          <div class="radio-item">
-            <input type="radio" name="formato_certidao" id="f4" value="vintenaria" {% if form.formato_certidao.value == 'vintenaria' %}checked{% endif %}>
-            <label for="f4">Certidão Vintenária</label>
-          </div>
-        </div>
 
         <div class="panel-row" id="panelIdentif">
           <div class="panel-card {% if form.tipo_busca.value == 'matricula' or not form.tipo_busca.value %}is-selected{% endif %}" data-value="matricula"

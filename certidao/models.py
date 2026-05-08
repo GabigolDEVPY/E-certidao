@@ -14,12 +14,14 @@ class OrderImovel(models.Model):
         ('atualizada', 'Certidão Atualizada + Ônus Reais + Ações'),
     ]
 
-    FORMATO_CERTIDAO = [
-        ('atualizada', 'Certidão Atualizada + Ônus Reais + Ações'),
-        ('inteiro-teor', 'Certidão Inteiro Teor'),
-        ('onus', 'Certidão de Ônus Reais'),
-        ('vintenaria', 'Certidão Vintenária'),
+    STATUS_PEDIDO = [
+        ('pendente', 'Pendente'),
+        ('pago', 'Pago'),
+        ('enviado', 'Enviado'),
+        ('entregue', 'Entregue'),
+        ('cancelado', 'Cancelado'),
     ]
+
 
     TIPO_IDENTIFICACAO = [
         ('matricula', 'Matrícula'),
@@ -30,6 +32,17 @@ class OrderImovel(models.Model):
         ('matricula', 'Tenho matrícula/transcrição'),
         ('endereco', 'Tenho endereço do imóvel'),
     ]
+
+    # =========================
+    # Usuário
+    # =========================
+    usuario = models.ForeignKey(
+        'users.User', 
+        on_delete=models.CASCADE, 
+        related_name='pedidos',
+        blank=True,
+        null=True
+    )
 
     # =========================
     # STEP 1 — Tipo Certidão
@@ -56,10 +69,6 @@ class OrderImovel(models.Model):
     # =========================
     # Dados da Certidão
     # =========================
-    formato_certidao = models.CharField(
-        max_length=50,
-        choices=FORMATO_CERTIDAO
-    )
 
     tipo_busca = models.CharField(
         max_length=20,
@@ -140,10 +149,22 @@ class OrderImovel(models.Model):
     atualizado_em = models.DateTimeField(auto_now=True)
 
     # =========================
-    # Pagamento
+    # Pagamento e Status
     # =========================
 
     is_paid = models.BooleanField(default=False)
+    
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_PEDIDO,
+        default='pendente'
+    )
+
+    total = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2, 
+        default=0.00
+    )
     
     def __str__(self):
         return f'{self.nome_solicitante} - {self.tipo_certidao}'
