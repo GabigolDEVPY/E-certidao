@@ -11,15 +11,11 @@ function loadServicesFromDOM() {
 }
 
 const allServices = loadServicesFromDOM();
-let currentTab = 'imoveis';
+let currentTab = 'todos';
 
 const tabLabels = {
   todos: 'Todos os Serviços',
-  registro: 'Registro Civil',
   imoveis: 'Imóveis',
-  notas: 'Notas',
-  protesto: 'Protesto',
-  pesquisa: 'Pesquisa',
 };
 
 // ─── RENDER ───
@@ -142,4 +138,4 @@ function openServiceModal(service) {
 }
 
 // ─── INIT ───
-renderServices('imoveis');
+renderServices('todos');

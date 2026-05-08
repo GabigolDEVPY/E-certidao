@@ -1468,3 +1468,167 @@ main,
 footer {
   margin-top: 0 !important;
 }
+
+/* ─── ADMIN AREA ─── */
+
+/* Stats row */
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.admin-stat-card {
+  background: var(--white);
+  border: 1px solid var(--rule);
+  padding: 14px 12px;
+  text-align: center;
+  text-decoration: none;
+  transition: all .15s;
+  cursor: pointer;
+}
+
+.admin-stat-card:hover {
+  background: var(--paper);
+  border-color: var(--ink-light);
+}
+
+.admin-stat-card.is-active {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.admin-stat-num {
+  display: block;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+.admin-stat-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  margin-top: 2px;
+}
+
+.admin-stat-card.is-active .admin-stat-num {
+  color: var(--accent);
+}
+
+/* Table */
+.admin-table-wrap {
+  overflow-x: auto;
+  margin-bottom: 32px;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.admin-table th {
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  border-bottom: 2px solid var(--ink);
+  white-space: nowrap;
+}
+
+.admin-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+  color: var(--ink);
+}
+
+.admin-table tbody tr:hover {
+  background: var(--paper);
+}
+
+/* Status badges */
+.status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .3px;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+.status-pendente {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.status-pago {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-enviado {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.status-entregue {
+  background: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.status-cancelado {
+  background: #f5f5f5;
+  color: #757575;
+}
+
+/* Detail button */
+.admin-btn-detail {
+  background: none;
+  border: 1px solid var(--rule);
+  padding: 6px 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-light);
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+
+.admin-btn-detail:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Responsive admin */
+@media (max-width: 767.98px) {
+  .admin-stats {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .admin-table {
+    font-size: 12px;
+  }
+
+  .admin-table th,
+  .admin-table td {
+    padding: 8px 6px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .admin-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

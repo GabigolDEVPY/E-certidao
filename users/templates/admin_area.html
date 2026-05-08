@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Painel Administrativo{% endblock %}
+
+{% block content %}
+<div class="form-wrapper" style="padding-top: 2rem; max-width: 1100px;">
+
+  <!-- Header -->
+  <div class="content-header">
+    <h1>Painel Administrativo</h1>
+    <span class="content-count">{{ contadores.total }} pedido{{ contadores.total|pluralize:"s" }}</span>
+  </div>
+
+  <!-- Contadores rápidos -->
+  <div class="admin-stats">
+    <a href="{% url 'admin_dashboard' %}" class="admin-stat-card {% if not status_filter %}is-active{% endif %}">
+      <span class="admin-stat-num">{{ contadores.total }}</span>
+      <span class="admin-stat-label">Todos</span>
+    </a>
+    <a href="{% url 'admin_dashboard' %}?status=pendente" class="admin-stat-card stat-pendente {% if status_filter == 'pendente' %}is-active{% endif %}">
+      <span class="admin-stat-num">{{ contadores.pendente }}</span>
+      <span class="admin-stat-label">Pendentes</span>
+    </a>
+    <a href="{% url 'admin_dashboard' %}?status=pago" class="admin-stat-card stat-pago {% if status_filter == 'pago' %}is-active{% endif %}">
+      <span class="admin-stat-num">{{ contadores.pago }}</span>
+      <span class="admin-stat-label">Pagos</span>
+    </a>
+    <a href="{% url 'admin_dashboard' %}?status=enviado" class="admin-stat-card stat-enviado {% if status_filter == 'enviado' %}is-active{% endif %}">
+      <span class="admin-stat-num">{{ contadores.enviado }}</span>
+      <span class="admin-stat-label">Enviados</span>
+    </a>
+    <a href="{% url 'admin_dashboard' %}?status=entregue" class="admin-stat-card stat-entregue {% if status_filter == 'entregue' %}is-active{% endif %}">
+      <span class="admin-stat-num">{{ contadores.entregue }}</span>
+      <span class="admin-stat-label">Entregues</span>
+    </a>
+    <a href="{% url 'admin_dashboard' %}?status=cancelado" class="admin-stat-card stat-cancelado {% if status_filter == 'cancelado' %}is-active{% endif %}">
+      <span class="admin-stat-num">{{ contadores.cancelado }}</span>
+      <span class="admin-stat-label">Cancelados</span>
+    </a>
+  </div>
+
+  <!-- Messages -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="attention-box" style="margin-bottom:16px;
+        {% if message.tags == 'success' %}border-left-color:#2e7d32;{% endif %}
+        {% if message.tags == 'error' %}border-left-color:#dc2626;{% endif %}
+      ">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- Listagem de Pedidos -->
+  {% if pedidos %}
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Tipo</th>
+            <th>Cartório</th>
+            <th>Data</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for pedido in pedidos %}
+          <tr>
+            <td><strong>#{{ pedido.id }}</strong></td>
+            <td>
+              {{ pedido.nome_solicitante }}
+              {% if pedido.usuario %}
+                <br><small style="color:var(--ink-light);">{{ pedido.usuario.email }}</small>
+              {% endif %}
+            </td>
+            <td>{{ pedido.get_tipo_certidao_display }}</td>
+            <td>
+              <small>{{ pedido.cartorio }}</small>
+              <br><small style="color:var(--ink-light);">{{ pedido.cidade }} - {{ pedido.estado }}</small>
+            </td>
+            <td>{{ pedido.criado_em|date:"d/m/Y H:i" }}</td>
+            <td><strong>R$ {{ pedido.total|floatformat:2 }}</strong></td>
+            <td>
+              <span class="status-badge status-{{ pedido.status }}">
+                {{ pedido.get_status_display }}
+              </span>
+            </td>
+            <td>
+              <button type="button" class="admin-btn-detail" onclick="openDetailModal({{ pedido.id }})">
+                Detalhes
+              </button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  {% else %}
+    <div class="attention-box">
+      Nenhum pedido encontrado{% if status_filter %} com o status "{{ status_filter }}"{% endif %}.
+    </div>
+  {% endif %}
+
+</div>
+
+<!-- Modais de Detalhe (fora do form-wrapper para posicionamento correto) -->
+{% if pedidos %}
+  {% for pedido in pedidos %}
+  <div class="custom-overlay" id="modal-detail-{{ pedido.id }}">
+    <div class="custom-modal site-modal" style="max-width:560px;">
+      <button class="modal-x" onclick="closeDetailModal({{ pedido.id }})">&times;</button>
+      <div class="modal-tag">Pedido #{{ pedido.id }}</div>
+      <h2 class="modal-title-custom">Detalhes do Pedido</h2>
+
+      <!-- Info do cliente -->
+      <div class="info-box" style="margin-bottom:12px;">
+        <div>
+          <strong>Cliente</strong>
+          {{ pedido.nome_solicitante }}<br>
+          E-mail: {{ pedido.email }}<br>
+          Telefone: {{ pedido.telefone }}
+          {% if pedido.usuario %}
+            <br>Usuário: {{ pedido.usuario.username }}
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Info da certidão -->
+      <div class="info-box" style="margin-bottom:12px;">
+        <div>
+          <strong>Certidão</strong>
+          Tipo: {{ pedido.get_tipo_certidao_display }}<br>
+          Busca: {{ pedido.get_tipo_busca_display }}<br>
+          {% if pedido.matriculas %}
+            Matrículas: {{ pedido.matriculas }}<br>
+          {% endif %}
+          {% if pedido.tipo_identificacao %}
+            Identificação: {{ pedido.get_tipo_identificacao_display }}<br>
+          {% endif %}
+          Destino: {{ pedido.destino_utilizacao }}
+        </div>
+      </div>
+
+      <!-- Info do cartório -->
+      <div class="info-box" style="margin-bottom:12px;">
+        <div>
+          <strong>Cartório</strong>
+          {{ pedido.cartorio }}<br>
+          {{ pedido.cidade }} - {{ pedido.estado }}
+        </div>
+      </div>
+
+      {% if pedido.cep_imovel %}
+      <!-- Info do imóvel (quando busca por endereço) -->
+      <div class="info-box" style="margin-bottom:12px;">
+        <div>
+          <strong>Endereço do Imóvel</strong>
+          {{ pedido.rua_imovel }}, {{ pedido.numero_imovel }}<br>
+          {{ pedido.bairro_imovel }} - CEP: {{ pedido.cep_imovel }}
+          {% if pedido.complemento_imovel %}<br>Complemento: {{ pedido.complemento_imovel }}{% endif %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Endereço de entrega -->
+      <div class="info-box" style="margin-bottom:12px;">
+        <div>
+          <strong>Endereço de Entrega</strong>
+          {{ pedido.rua }}, {{ pedido.numero }}<br>
+          {{ pedido.bairro }} - CEP: {{ pedido.cep }}
+          {% if pedido.complemento %}<br>Complemento: {{ pedido.complemento }}{% endif %}<br>
+          País: {{ pedido.pais }}
+        </div>
+      </div>
+
+      <!-- Info de pagamento -->
+      <div class="info-box" style="margin-bottom:16px;">
+        <div>
+          <strong>Financeiro</strong>
+          Total: R$ {{ pedido.total|floatformat:2 }}<br>
+          Pago: {% if pedido.is_paid %}<span style="color:#2e7d32;font-weight:600;">Sim</span>{% else %}<span style="color:var(--accent);font-weight:600;">Não</span>{% endif %}<br>
+          Status atual:
+          <span class="status-badge status-{{ pedido.status }}">
+            {{ pedido.get_status_display }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Alterar Status -->
+      <form method="POST" action="{% url 'admin_alterar_status' pedido.id %}">
+        {% csrf_token %}
+        <label class="field-label">Alterar Status</label>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <select name="status" class="field-select" style="flex:1;">
+            {% for value, label in status_choices %}
+              <option value="{{ value }}" {% if pedido.status == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+          <button type="submit" class="submit-btn" style="padding:10px 18px;font-size:12px;margin-top:0;">
+            Salvar
+          </button>
+        </div>
+      </form>
+
+      <p style="font-size:11px;color:var(--ink-light);margin-top:12px;">
+        Criado em: {{ pedido.criado_em|date:"d/m/Y H:i" }} · Atualizado: {{ pedido.atualizado_em|date:"d/m/Y H:i" }}
+      </p>
+    </div>
+  </div>
+  {% endfor %}
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function openDetailModal(id) {
+    var modal = document.getElementById('modal-detail-' + id);
+    if (modal) {
+      modal.classList.add('active');
+      document.documentElement.classList.add('modal-lock');
+    }
+  }
+
+  function closeDetailModal(id) {
+    var modal = document.getElementById('modal-detail-' + id);
+    if (modal) {
+      modal.classList.remove('active');
+      document.documentElement.classList.remove('modal-lock');
+    }
+  }
+
+  // Fechar modal ao clicar no overlay
+  document.querySelectorAll('.custom-overlay').forEach(function(overlay) {
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) {
+        overlay.classList.remove('active');
+        document.documentElement.classList.remove('modal-lock');
+      }
+    });
+  });
+</script>
+{% endblock %}

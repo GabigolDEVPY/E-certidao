@@ -5,7 +5,16 @@ from .models import OrderImovel
 class OrderImovelForm(forms.ModelForm):
     class Meta:
         model = OrderImovel
-        exclude = ['criado_em', 'atualizado_em']
+        fields = [
+            'tipo_certidao',
+            'estado', 'cidade', 'cartorio',
+            'nome_solicitante', 'email', 'telefone',
+            'tipo_busca', 'tipo_identificacao', 'matriculas',
+            'cep_imovel', 'numero_imovel', 'rua_imovel',
+            'bairro_imovel', 'complemento_imovel',
+            'destino_utilizacao',
+            'pais', 'cep', 'bairro', 'rua', 'numero', 'complemento',
+        ]
         widgets = {
             'tipo_certidao': forms.HiddenInput(),
             'tipo_busca': forms.HiddenInput(),

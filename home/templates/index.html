@@ -9,14 +9,8 @@
     <!-- Desktop: tabs -->
     <div class="cats-desktop d-none d-md-flex">
       <span class="nav-label">Categorias</span>
-      <button class="tab-btn" onclick="setTab(this,'todos')">Todos</button>
-      <button class="tab-btn" onclick="setTab(this,'registro')">Registro Civil</button>
-      <button class="tab-btn active" onclick="setTab(this,'imoveis')">Imóveis</button>
-      <button class="tab-btn" onclick="setTab(this,'notas')">Notas</button>
-      <button class="tab-btn" onclick="setTab(this,'protesto')">Protesto</button>
-      <button class="tab-btn" onclick="setTab(this,'federais')">Federais / Estaduais</button>
-      <button class="tab-btn" onclick="setTab(this,'pesquisa')">Pesquisa</button>
-      <button class="tab-btn" onclick="setTab(this,'traducao')">Tradução / Apostilamento</button>
+      <button class="tab-btn active" onclick="setTab(this,'todos')">Todos</button>
+      <button class="tab-btn" onclick="setTab(this,'imoveis')">Imóveis</button>
     </div>
 
     <!-- Mobile: dropdown -->
@@ -29,22 +23,13 @@
             <line x1="3" y1="9" x2="21" y2="9" />
             <line x1="9" y1="21" x2="9" y2="9" />
           </svg>
-          <span id="catDropdownLabel">Imóveis</span>
+          <span id="catDropdownLabel">Todos os serviços</span>
         </button>
         <ul class="dropdown-menu w-100">
-          <li><button class="dropdown-item" onclick="setTabMobile(this,'todos','Todos os serviços')">Todos os
+          <li><button class="dropdown-item active" onclick="setTabMobile(this,'todos','Todos os serviços')">Todos os
               serviços</button></li>
-          <li><button class="dropdown-item" onclick="setTabMobile(this,'registro','Registro Civil')">Registro
-              Civil</button></li>
-          <li><button class="dropdown-item active" onclick="setTabMobile(this,'imoveis','Imóveis')">Imóveis</button>
+          <li><button class="dropdown-item" onclick="setTabMobile(this,'imoveis','Imóveis')">Imóveis</button>
           </li>
-          <li><button class="dropdown-item" onclick="setTabMobile(this,'notas','Notas')">Notas</button></li>
-          <li><button class="dropdown-item" onclick="setTabMobile(this,'protesto','Protesto')">Protesto</button></li>
-          <li><button class="dropdown-item" onclick="setTabMobile(this,'federais','Federais / Estaduais')">Federais /
-              Estaduais</button></li>
-          <li><button class="dropdown-item" onclick="setTabMobile(this,'pesquisa','Pesquisa')">Pesquisa</button></li>
-          <li><button class="dropdown-item" onclick="setTabMobile(this,'traducao','Tradução / Apostilamento')">Tradução
-              / Apostilamento</button></li>
         </ul>
       </div>
     </div>
@@ -58,7 +43,7 @@
 
     <!-- Conteúdo: largura total -->
     <div class="content-header">
-      <h1 id="tabTitle">Imóveis</h1>
+      <h1 id="tabTitle">Todos os Serviços</h1>
       <span class="content-count" id="contentCount"></span>
     </div>
     <div class="service-list" id="serviceList"></div>
@@ -98,31 +83,6 @@
   <div data-url="{% url 'certidao:imovel' %}" class="service-data" data-categories="todos,imoveis"
     data-icon-id="icon-house" data-title="Certidão de Imóvel"
     data-desc="Obtenha a certidão de matrícula de qualquer imóvel no Brasil."></div>
-  <div class="service-data" data-categories="todos,imoveis" data-icon-id="icon-house"
-    data-title="Certidão de Penhor de Safra" data-desc="Certidão relacionada ao penhor agrícola e de safra."></div>
-  <div class="service-data" data-categories="todos,imoveis,pesquisa" data-icon-id="icon-search"
-    data-title="Pesquisa de Bens" data-desc="Pesquise bens imóveis de uma pessoa física ou jurídica."></div>
-  <div class="service-data" data-categories="todos,imoveis,federais" data-icon-id="icon-shield"
-    data-title="Monitoramento de CPF / CNPJ" data-desc="Monitore alterações em registros de CPF ou CNPJ."></div>
-  <div class="service-data" data-categories="todos,imoveis" data-icon-id="icon-doc"
-    data-title="Pacote de Certidões | Compra e Venda"
-    data-desc="Pacote completo de certidões para transações imobiliárias."></div>
-  <div class="service-data" data-categories="todos,registro" data-icon-id="icon-table"
-    data-title="Certidão de Nascimento" data-desc="Segunda via da certidão de nascimento em qualquer cartório."></div>
-  <div class="service-data" data-categories="todos,registro" data-icon-id="icon-check"
-    data-title="Certidão de Casamento" data-desc="Obtenha a certidão de casamento com facilidade."></div>
-  <div class="service-data" data-categories="todos,notas" data-icon-id="icon-file" data-title="Escritura Pública"
-    data-desc="Solicite escrituras públicas de qualquer tipo."></div>
-  <div class="service-data" data-categories="todos,protesto" data-icon-id="icon-star" data-title="Certidão de Protesto"
-    data-desc="Verifique protestos em nome de pessoa física ou jurídica."></div>
-  <div class="service-data" data-categories="todos,federais" data-icon-id="icon-shield"
-    data-title="Certidão da Receita Federal" data-desc="Certidões de regularidade fiscal perante a Receita Federal.">
-  </div>
-  <div class="service-data" data-categories="todos,traducao" data-icon-id="icon-monitor"
-    data-title="Tradução Juramentada" data-desc="Tradução oficial por tradutores juramentados."></div>
-  <div class="service-data" data-categories="todos,traducao" data-icon-id="icon-monitor"
-    data-title="Apostilamento de Haia" data-desc="Apostile documentos para países signatários da Convenção de Haia.">
-  </div>
 </div>
 
 <!-- ═══ SVG SPRITES ═══ -->

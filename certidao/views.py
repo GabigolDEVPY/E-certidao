@@ -1,10 +1,13 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 from django.shortcuts import render, redirect
+from django.contrib import messages
 from .forms import OrderImovelForm
 
 
-class ImovelView(View):
+class ImovelView(LoginRequiredMixin, View):
     template_name = 'certidao_imovel.html'
+    login_url = 'login'
 
     def get(self, request):
         form = OrderImovelForm()
@@ -17,6 +20,6 @@ class ImovelView(View):
             order = form.save(commit=False)
             order.usuario = request.user
             order.save()
-            
-            return redirect('/pagamento/')
+            messages.success(request, 'Pedido realizado com sucesso!')
+            return redirect('area_cliente')
         return render(request, self.template_name, {'form': form})
