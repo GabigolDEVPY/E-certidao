@@ -15,7 +15,6 @@ urlpatterns = [
     path('conta/', views.area_cliente, name='area_cliente'),
 
     path('conta/alterar-senha/', views.alterar_senha, name='alterar_senha'),
-    path('conta/pedido/<int:pedido_id>/status/', views.alterar_status_pedido, name='alterar_status_pedido'),
     path('conta/pedido/<int:pedido_id>/pagar/', views.pagar_pedido, name='pagar_pedido'),
 
 ]

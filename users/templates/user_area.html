@@ -43,14 +43,6 @@
       <span class="service-arrow">&#8594;</span>
     </div>
 
-    <!-- Alterar Situação do Pedido -->
-    <div class="service-card" onclick="document.getElementById('modal-status').classList.add('active');document.documentElement.classList.add('modal-lock')">
-      <div class="service-icon">
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 2v4m0 12v4m10-10h-4M6 12H2m15.07-5.07l-2.83 2.83M9.76 14.24l-2.83 2.83m11.14 0l-2.83-2.83M9.76 9.76L6.93 6.93"/></svg>
-      </div>
-      <span class="service-title">Alterar Situação do Pedido</span>
-      <span class="service-arrow">&#8594;</span>
-    </div>
 
     <!-- Alterar Senha -->
     <div class="service-card" onclick="document.getElementById('modal-senha').classList.add('active');document.documentElement.classList.add('modal-lock')">
@@ -130,50 +122,6 @@
     {% else %}
       <div class="attention-box">
         Nenhum pedido pendente de pagamento.
-      </div>
-    {% endif %}
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════ -->
-<!-- MODAL: Alterar Situação do Pedido          -->
-<!-- ═══════════════════════════════════════════ -->
-<div class="custom-overlay" id="modal-status">
-  <div class="custom-modal site-modal">
-    <button class="modal-x" onclick="fecharModal('modal-status')">&times;</button>
-    <div class="modal-tag">Status</div>
-    <h2 class="modal-title-custom">Alterar Situação do Pedido</h2>
-    <p class="modal-sub">Selecione o pedido e altere sua situação.</p>
-
-    {% if pedidos %}
-      {% for pedido in pedidos %}
-        <div class="step-block is-active" style="margin-bottom:8px;">
-          <div class="step-header" style="padding:12px 16px;">
-            <div class="step-num"><span class="step-num-inner">{{ pedido.id }}</span></div>
-            <div class="step-meta">
-              <div class="step-title">Pedido #{{ pedido.id }} &mdash; R$ {{ pedido.total|floatformat:2 }}</div>
-              <div class="step-subtitle">{{ pedido.criado_em|date:"d/m/Y" }}</div>
-            </div>
-          </div>
-          <div class="step-body" style="display:block;padding:12px 16px;">
-            <form method="POST" action="{% url 'alterar_status_pedido' pedido.id %}">
-              {% csrf_token %}
-              <label class="field-label">Novo Status</label>
-              <select name="status" class="field-select" style="margin-bottom:10px;">
-                <option value="pendente" {% if pedido.status == 'pendente' %}selected{% endif %}>Pendente</option>
-                <option value="pago" {% if pedido.status == 'pago' %}selected{% endif %}>Pago</option>
-                <option value="enviado" {% if pedido.status == 'enviado' %}selected{% endif %}>Enviado</option>
-                <option value="entregue" {% if pedido.status == 'entregue' %}selected{% endif %}>Entregue</option>
-                <option value="cancelado" {% if pedido.status == 'cancelado' %}selected{% endif %}>Cancelado</option>
-              </select>
-              <button type="submit" class="submit-btn" style="padding:10px 18px;font-size:12px;">Salvar Status</button>
-            </form>
-          </div>
-        </div>
-      {% endfor %}
-    {% else %}
-      <div class="attention-box">
-        Nenhum pedido encontrado.
       </div>
     {% endif %}
   </div>

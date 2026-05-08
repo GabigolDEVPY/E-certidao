@@ -12,7 +12,11 @@ class ImovelView(View):
 
     def post(self, request):
         form = OrderImovelForm(request.POST)
+
         if form.is_valid():
-            form.save()
+            order = form.save(commit=False)
+            order.usuario = request.user
+            order.save()
+            
             return redirect('/pagamento/')
         return render(request, self.template_name, {'form': form})

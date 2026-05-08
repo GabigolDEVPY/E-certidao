@@ -63,15 +63,7 @@ def alterar_senha(request):
             messages.error(request, 'Senha atual incorreta.')
     return redirect('area_cliente')
 
-@login_required
-def alterar_status_pedido(request, pedido_id):
-    if request.method == 'POST':
-        pedido = get_object_or_404(Pedido, id=pedido_id, usuario=request.user)
-        pedido.status = request.POST['status']
-        pedido.save()
-        messages.success(request, f'Status do pedido #{pedido.id} atualizado.')
-    return redirect('area_cliente')
-    
+
 @login_required
 def pagar_pedido(request, pedido_id):
     if request.method == 'POST':

@@ -2,11 +2,8 @@ from django.db import models
 
 # Create your models here.
 
-from django.db import models
-
 
 class OrderImovel(models.Model):
-
     TIPOS_CERTIDAO = [
         ('inteiro-teor', 'Certidão Inteiro Teor'),
         ('onus-reais', 'Certidão de Ônus Reais'),
