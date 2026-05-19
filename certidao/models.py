@@ -1,6 +1,7 @@
 from django.db import models
 
-# Create your models here.
+from core.encrypted_fields import EncryptedCharField, EncryptedEmailField, EncryptedTextField
+from core.privacy import mask_email, mask_phone
 
 
 class OrderImovel(models.Model):
@@ -59,9 +60,9 @@ class OrderImovel(models.Model):
     # =========================
     # STEP 3 — Solicitante
     # =========================
-    nome_solicitante = models.CharField(max_length=255)
-    email = models.EmailField()
-    telefone = models.CharField(max_length=20)
+    nome_solicitante = EncryptedCharField(max_length=255)
+    email = EncryptedEmailField(max_length=254)
+    telefone = EncryptedCharField(max_length=20)
 
     # =========================
     # Dados da Certidão
@@ -79,7 +80,7 @@ class OrderImovel(models.Model):
         null=True
     )
 
-    matriculas = models.TextField(
+    matriculas = EncryptedTextField(
         blank=True,
         null=True,
         help_text="Separar múltiplas matrículas por vírgula"
@@ -88,52 +89,53 @@ class OrderImovel(models.Model):
     # =========================
     # Endereço do imóvel
     # =========================
-    cep_imovel = models.CharField(
+    cep_imovel = EncryptedCharField(
         max_length=9,
         blank=True,
         null=True
     )
 
-    numero_imovel = models.CharField(
+    numero_imovel = EncryptedCharField(
         max_length=20,
         blank=True,
         null=True
     )
 
-    rua_imovel = models.CharField(
+    rua_imovel = EncryptedCharField(
         max_length=255,
         blank=True,
         null=True
     )
 
-    bairro_imovel = models.CharField(
+    bairro_imovel = EncryptedCharField(
         max_length=255,
         blank=True,
         null=True
     )
 
-    complemento_imovel = models.CharField(
+    complemento_imovel = EncryptedCharField(
         max_length=255,
         blank=True,
         null=True
     )
 
-    destino_utilizacao = models.TextField()
+    destino_utilizacao = EncryptedTextField()
 
     # =========================
     # STEP 4 — Cadastro
     # =========================
     pais = models.CharField(
         max_length=100,
-        default='Brasil'
+        default='Brasil',
+        blank=True,
     )
 
-    cep = models.CharField(max_length=9)
-    bairro = models.CharField(max_length=255)
-    rua = models.CharField(max_length=255)
-    numero = models.CharField(max_length=20)
+    cep = EncryptedCharField(max_length=9, blank=True, null=True)
+    bairro = EncryptedCharField(max_length=255, blank=True, null=True)
+    rua = EncryptedCharField(max_length=255, blank=True, null=True)
+    numero = EncryptedCharField(max_length=20, blank=True, null=True)
 
-    complemento = models.CharField(
+    complemento = EncryptedCharField(
         max_length=255,
         blank=True,
         null=True
@@ -162,6 +164,14 @@ class OrderImovel(models.Model):
         decimal_places=2, 
         default=0.00
     )
+
+    @property
+    def email_mascarado(self):
+        return mask_email(self.email)
+
+    @property
+    def telefone_mascarado(self):
+        return mask_phone(self.telefone)
     
     def __str__(self):
         return f'{self.nome_solicitante} - {self.tipo_certidao}'

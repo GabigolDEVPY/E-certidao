@@ -192,6 +192,15 @@
             {% endif %}
           </div>
 
+          <div class="field-group {% if form.aceite_privacidade.errors %}field--error{% endif %}">
+            <label class="privacy-check">
+              <input type="checkbox" name="{{ form.aceite_privacidade.html_name }}" id="{{ form.aceite_privacidade.id_for_label }}"
+                {% if form.aceite_privacidade.value %}checked{% endif %}>
+              <span>Li e aceito a <a href="{% url 'privacy_policy' %}" target="_blank" rel="noopener">Política de Privacidade</a> e o tratamento dos meus dados para criação da conta.</span>
+            </label>
+            {% if form.aceite_privacidade.errors %}<p class="field-error-msg">{{ form.aceite_privacidade.errors|join:", " }}</p>{% endif %}
+          </div>
+
           <button type="submit" class="reg-submit">
             Criar conta
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"

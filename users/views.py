@@ -1,5 +1,5 @@
-from django.contrib.auth import update_session_auth_hash
-from django.shortcuts import render, redirect, get_object_or_404
+from django.core.exceptions import ValidationError
+from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
@@ -7,10 +7,10 @@ from django.views.decorators.http import require_POST
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from django.contrib.auth.views import LoginView, LogoutView
-from django.contrib.auth.forms import AuthenticationForm
-from .forms import RegisterForm
+from .forms import EmailOrUsernameAuthenticationForm, RegisterForm
 from .models import User
-from certidao.models import OrderImovel as Pedido
+from . import services as user_services
+from certidao import services as pedido_services
 
 
 # ═══════════════════════════════════════════
@@ -26,7 +26,7 @@ class RegisterView(CreateView):
 
 class UserLoginView(LoginView):
     template_name = "register.html"
-    authentication_form = AuthenticationForm
+    authentication_form = EmailOrUsernameAuthenticationForm
     redirect_authenticated_user = True
 
     def get_success_url(self):
@@ -50,33 +50,21 @@ class UserLogoutView(LogoutView):
 
 @login_required
 def area_cliente(request):
-    pedidos = Pedido.objects.filter(usuario=request.user).order_by('-criado_em')
-    pedidos_pendentes = pedidos.filter(status='pendente')
-    return render(request, 'user_area.html', {
-        'pedidos': pedidos,
-        'pedidos_pendentes': pedidos_pendentes,
-    })
+    return render(request, 'user_area.html', user_services.contexto_area_cliente(request.user))
 
 
 @login_required
 @require_POST
 def alterar_senha(request):
-    user = request.user
     senha_atual = request.POST.get('senha_atual', '')
     nova_senha = request.POST.get('nova_senha', '')
     confirmar_senha = request.POST.get('confirmar_senha', '')
 
-    if not user.check_password(senha_atual):
-        messages.error(request, 'Senha atual incorreta.')
-    elif len(nova_senha) < 8:
-        messages.error(request, 'A nova senha deve ter no mínimo 8 caracteres.')
-    elif nova_senha != confirmar_senha:
-        messages.error(request, 'As senhas não coincidem.')
-    else:
-        user.set_password(nova_senha)
-        user.save()
-        update_session_auth_hash(request, user)
+    try:
+        user_services.alterar_senha_usuario(request, senha_atual, nova_senha, confirmar_senha)
         messages.success(request, 'Senha alterada com sucesso.')
+    except ValidationError as exc:
+        messages.error(request, ' '.join(exc.messages))
 
     return redirect('area_cliente')
 
@@ -84,7 +72,7 @@ def alterar_senha(request):
 @login_required
 @require_POST
 def pagar_pedido(request, pedido_id):
-    pedido = get_object_or_404(Pedido, id=pedido_id, usuario=request.user)
+    pedido = user_services.obter_pedido_para_pagamento(request.user, pedido_id)
     # TODO: Integrar gateway de pagamento
     messages.info(request, f'Funcionalidade de pagamento do pedido #{pedido.id} em desenvolvimento.')
     return redirect('area_cliente')
@@ -94,45 +82,27 @@ def pagar_pedido(request, pedido_id):
 # Área Administrativa (somente staff)
 # ═══════════════════════════════════════════
 
-STATUS_VALIDOS = [s[0] for s in Pedido.STATUS_PEDIDO]
-
-
 @staff_member_required(login_url='login')
 def admin_dashboard(request):
     status_filter = request.GET.get('status', '')
-    pedidos = Pedido.objects.select_related('usuario').order_by('-criado_em')
-
-    if status_filter and status_filter in STATUS_VALIDOS:
-        pedidos = pedidos.filter(status=status_filter)
-
-    contadores = {
-        'total': Pedido.objects.count(),
-        'pendente': Pedido.objects.filter(status='pendente').count(),
-        'pago': Pedido.objects.filter(status='pago').count(),
-        'enviado': Pedido.objects.filter(status='enviado').count(),
-        'entregue': Pedido.objects.filter(status='entregue').count(),
-        'cancelado': Pedido.objects.filter(status='cancelado').count(),
-    }
 
     return render(request, 'admin_area.html', {
-        'pedidos': pedidos,
-        'contadores': contadores,
+        'pedidos': pedido_services.listar_pedidos_admin(status_filter),
+        'contadores': pedido_services.contadores_pedidos(),
         'status_filter': status_filter,
-        'status_choices': Pedido.STATUS_PEDIDO,
+        'status_choices': pedido_services.STATUS_CHOICES,
     })
 
 
 @staff_member_required(login_url='login')
 @require_POST
 def admin_alterar_status(request, pedido_id):
-    pedido = get_object_or_404(Pedido, id=pedido_id)
     novo_status = request.POST.get('status', '')
+    pedido = pedido_services.alterar_status_pedido(pedido_id, novo_status)
 
-    if novo_status not in STATUS_VALIDOS:
+    if pedido is None:
         messages.error(request, 'Status inválido.')
     else:
-        pedido.status = novo_status
-        pedido.save(update_fields=['status', 'atualizado_em'])
         messages.success(request, f'Status do pedido #{pedido.id} atualizado para "{pedido.get_status_display()}".')
 
     return redirect('admin_dashboard')

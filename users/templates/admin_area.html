@@ -75,7 +75,7 @@
             <td>
               {{ pedido.nome_solicitante }}
               {% if pedido.usuario %}
-                <br><small style="color:var(--ink-light);">{{ pedido.usuario.email }}</small>
+                <br><small style="color:var(--ink-light);">{{ pedido.usuario.email_mascarado }}</small>
               {% endif %}
             </td>
             <td>{{ pedido.get_tipo_certidao_display }}</td>
@@ -168,16 +168,18 @@
       </div>
       {% endif %}
 
-      <!-- Endereço de entrega -->
+      {% if pedido.cep or pedido.rua or pedido.numero or pedido.bairro or pedido.complemento %}
+      <!-- Endereço de entrega/cobrança opcional -->
       <div class="info-box" style="margin-bottom:12px;">
         <div>
-          <strong>Endereço de Entrega</strong>
+          <strong>Endereço de Entrega/Cobrança</strong>
           {{ pedido.rua }}, {{ pedido.numero }}<br>
           {{ pedido.bairro }} - CEP: {{ pedido.cep }}
           {% if pedido.complemento %}<br>Complemento: {{ pedido.complemento }}{% endif %}<br>
           País: {{ pedido.pais }}
         </div>
       </div>
+      {% endif %}
 
       <!-- Info de pagamento -->
       <div class="info-box" style="margin-bottom:16px;">

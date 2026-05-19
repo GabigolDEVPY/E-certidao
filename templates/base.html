@@ -26,6 +26,17 @@
     {% block content %}{% endblock %}
   </main>
   {% include 'footer.html' %}
+  <div class="cookie-banner" id="cookieConsentBanner" hidden role="dialog" aria-live="polite" aria-label="Preferências de cookies">
+    <div>
+      <strong>Cookies do site</strong>
+      <p>Usamos cookies necessários para login, segurança e funcionamento. Cookies opcionais só serão usados se você aceitar.</p>
+      <a href="{% url 'privacy_policy' %}">Política de Privacidade</a>
+    </div>
+    <div class="cookie-actions">
+      <button type="button" class="cookie-secondary" id="essentialCookies">Usar só necessários</button>
+      <button type="button" class="cookie-primary" id="acceptCookies">Aceitar cookies</button>
+    </div>
+  </div>
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="{% static 'js/script.js' %}"></script>

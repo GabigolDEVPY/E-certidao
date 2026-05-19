@@ -1,7 +1,9 @@
 from django import forms
+from django.contrib.auth import authenticate
 from django.contrib.auth.forms import UserCreationForm
 import re
 from .models import User
+from core.privacy import document_hash, email_hash, normalize_email
 
 
 def validar_cpf(cpf):
@@ -50,6 +52,11 @@ def validar_cnpj(cnpj):
 class RegisterForm(UserCreationForm):
     first_name = forms.CharField(max_length=50, required=True, label="Nome")
     last_name  = forms.CharField(max_length=50, required=True, label="Sobrenome")
+    aceite_privacidade = forms.BooleanField(
+        required=True,
+        label="Li e aceito a Política de Privacidade e o tratamento dos meus dados para criação da conta.",
+        error_messages={"required": "Você precisa aceitar a Política de Privacidade para criar a conta."},
+    )
 
     class Meta:
         model = User
@@ -62,12 +69,13 @@ class RegisterForm(UserCreationForm):
             "telefone",
             "password1",
             "password2",
+            "aceite_privacidade",
         )
 
     def clean_email(self):
-        email = self.cleaned_data.get('email')
+        email = normalize_email(self.cleaned_data.get('email'))
 
-        if User.objects.filter(email=email).exists():
+        if User.objects.filter(email_hash=email_hash(email)).exists():
             raise forms.ValidationError("Este e-mail já está em uso.")
 
         return email
@@ -96,4 +104,50 @@ class RegisterForm(UserCreationForm):
         else:
             raise forms.ValidationError("CPF (11 dígitos) ou CNPJ (14 dígitos) inválido.")
 
+        if User.objects.filter(cpf_cnpj_hash=document_hash(numeros)).exists():
+            raise forms.ValidationError("Este CPF/CNPJ já está em uso.")
+
         return cpf_cnpj
+
+
+class EmailOrUsernameAuthenticationForm(forms.Form):
+    username = forms.CharField(label="Usuário ou e-mail")
+    password = forms.CharField(label="Senha", strip=False, widget=forms.PasswordInput)
+
+    error_messages = {
+        "invalid_login": "Usuário, e-mail ou senha incorretos.",
+        "inactive": "Esta conta está inativa.",
+    }
+
+    def __init__(self, request=None, *args, **kwargs):
+        self.request = request
+        self.user_cache = None
+        super().__init__(*args, **kwargs)
+
+    def clean(self):
+        identifier = self.cleaned_data.get("username")
+        password = self.cleaned_data.get("password")
+
+        if identifier and password:
+            username = self._resolve_username(identifier)
+            self.user_cache = authenticate(self.request, username=username, password=password)
+
+            if self.user_cache is None:
+                raise forms.ValidationError(
+                    self.error_messages["invalid_login"],
+                    code="invalid_login",
+                )
+            if not self.user_cache.is_active:
+                raise forms.ValidationError(self.error_messages["inactive"], code="inactive")
+
+        return self.cleaned_data
+
+    def _resolve_username(self, identifier):
+        identifier = identifier.strip()
+        if "@" not in identifier:
+            return identifier
+        user = User.objects.filter(email_hash=email_hash(identifier)).only("username").first()
+        return user.username if user else identifier
+
+    def get_user(self):
+        return self.user_cache

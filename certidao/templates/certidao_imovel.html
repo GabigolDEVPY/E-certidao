@@ -369,8 +369,8 @@
       <div class="step-header" onclick="editStep(4)">
         <div class="step-num"><span class="step-num-inner">4</span></div>
         <div class="step-meta">
-          <div class="step-title">Dados do seu Cadastro</div>
-          <div class="step-subtitle">Endereço de entrega</div>
+          <div class="step-title">Confirmação e envio</div>
+          <div class="step-subtitle">Envio por e-mail e endereço opcional</div>
           <div class="step-summary" id="s4summary"></div>
         </div>
         <div class="step-edit-link">
@@ -383,9 +383,13 @@
       </div>
       <div class="step-body">
 
+        <div class="attention-box">
+          A certidão eletrônica será enviada por e-mail. Preencha endereço somente se for necessário para cobrança ou entrega física futura.
+        </div>
+
         <div class="fields-row">
           <div>
-            <label class="field-label">País <span class="req">*</span></label>
+            <label class="field-label">País</label>
             <div class="field-wrap">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
@@ -400,11 +404,11 @@
             </div>
           </div>
           <div>
-            <label class="field-label">CEP <span class="req">*</span></label>
+            <label class="field-label">CEP</label>
             <div class="cep-row">
               <input type="text" name="cep" id="inp-cep" class="field-input {% if form.cep.errors %}field-input-error{% endif %}" placeholder="00000-000"
                      oninput="maskCep(this)" value="{{ form.cep.value|default:'' }}">
-              <button type="button" class="cep-btn" onclick="completarCep()">Completar CEP</button>
+              <button type="button" class="cep-btn" onclick="completarCep()">Confirmar CEP</button>
             </div>
             {% if form.cep.errors %}<div class="field-error">{% for e in form.cep.errors %}{{ e }}{% endfor %}</div>{% endif %}
           </div>
@@ -412,7 +416,7 @@
 
         <div class="fields-row">
           <div>
-            <label class="field-label">Bairro <span class="req">*</span></label>
+            <label class="field-label">Bairro</label>
             <div class="field-wrap">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
@@ -424,7 +428,7 @@
             {% if form.bairro.errors %}<div class="field-error">{% for e in form.bairro.errors %}{{ e }}{% endfor %}</div>{% endif %}
           </div>
           <div>
-            <label class="field-label">Rua / Avenida <span class="req">*</span></label>
+            <label class="field-label">Rua / Avenida</label>
             <div class="field-wrap">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
@@ -439,7 +443,7 @@
 
         <div class="fields-row">
           <div>
-            <label class="field-label">Número <span class="req">*</span></label>
+            <label class="field-label">Número</label>
             <div class="field-wrap">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
@@ -502,6 +506,14 @@
           <div class="delivery-price">Grátis</div>
         </div>
 
+        <div class="attention-box">
+          <label class="privacy-check">
+            <input type="checkbox" name="aceite_tratamento" id="id_aceite_tratamento" {% if form.aceite_tratamento.value %}checked{% endif %}>
+            <span>Confirmo que os dados informados estão corretos e aceito o tratamento necessário para emitir a certidão.</span>
+          </label>
+          {% if form.aceite_tratamento.errors %}<div class="field-error">{% for e in form.aceite_tratamento.errors %}{{ e }}{% endfor %}</div>{% endif %}
+        </div>
+
         <div class="step-actions">
           <button type="button" class="btn-back" onclick="goToStep(3)">Voltar</button>
           <button type="button" class="btn-finish" onclick="showConfirmModal()">
@@ -534,7 +546,7 @@
       </div>
 
       <div style="padding:22px;">
-        <p style="font-size:10px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--ink-light);text-align:center;margin-bottom:4px;">
+        <p id="modal-data-label" style="font-size:10px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--ink-light);text-align:center;margin-bottom:4px;">
           Matrícula(s) do imóvel</p>
         <p id="modal-mats"
            style="font-size:22px;font-weight:700;color:var(--ink);text-align:center;margin-bottom:18px;letter-spacing:.04em;">
@@ -638,6 +650,11 @@
   function showSection(id) { document.getElementById(id).style.display = ''; }
   function hideSection(id) { document.getElementById(id).style.display = 'none'; }
 
+  function getFieldValue(selector) {
+    const el = document.querySelector(selector);
+    return el ? el.value.trim() : '';
+  }
+
   /* ── step 1 ── */
   function nextStep1() {
     const sel = document.querySelector('#cardsTipo .option-card.is-selected');
@@ -721,6 +738,19 @@
     const tel = document.getElementById('inp-tel').value.trim();
     const destino = document.getElementById('inp-destino').value.trim();
     if (!nome || !email || !tel || !destino) { alert('Preencha todos os campos obrigatórios.'); return; }
+    const tipoBusca = document.getElementById('id_tipo_busca').value;
+    if (tipoBusca === 'matricula' && matriculas.length === 0) {
+      alert('Adicione pelo menos uma matrícula ou transcrição.');
+      return;
+    }
+    if (tipoBusca === 'endereco') {
+      const camposEndereco = ['cep_imovel', 'numero_imovel', 'rua_imovel', 'bairro_imovel'];
+      const incompleto = camposEndereco.some(name => !getFieldValue(`[name="${name}"]`));
+      if (incompleto) {
+        alert('Preencha o endereço do imóvel para continuar.');
+        return;
+      }
+    }
     document.getElementById('s3summary').textContent = nome + ' · ' + email;
     goToStep(4);
   }
@@ -735,20 +765,48 @@
   function completarCep() {
     const cep = document.getElementById('inp-cep').value.replace(/\D/g, '');
     if (cep.length !== 8) { alert('CEP inválido.'); return; }
-    document.getElementById('inp-bairro').value = 'Centro';
-    document.getElementById('inp-rua').value = 'Rua das Flores';
-    document.getElementById('txtEndCadastro').textContent = ' - Centro - CEP: ' + cep.slice(0, 5) + '-' + cep.slice(5);
+    document.getElementById('txtEndCadastro').textContent = 'CEP informado: ' + cep.slice(0, 5) + '-' + cep.slice(5);
     document.getElementById('boxEndCadastro').style.display = 'flex';
   }
 
   /* ── modal de confirmação ── */
   function showConfirmModal() {
-    const mats = matriculas.length ? matriculas.join(', ') : '—';
+    const aceite = document.getElementById('id_aceite_tratamento');
+    if (!aceite || !aceite.checked) {
+      alert('Confirme o tratamento dos dados para continuar.');
+      return;
+    }
+
+    const cep = getFieldValue('[name="cep"]');
+    const rua = getFieldValue('[name="rua"]');
+    const numero = getFieldValue('[name="numero"]');
+    const bairro = getFieldValue('[name="bairro"]');
+    const enderecoInformado = cep || rua || numero || bairro;
+    if (enderecoInformado && (!cep || !rua || !numero || !bairro)) {
+      alert('Se preencher endereço, informe CEP, rua, número e bairro.');
+      return;
+    }
+
+    const tipoBusca = document.getElementById('id_tipo_busca').value;
+    let dadosImovel = matriculas.length ? matriculas.join(', ') : '—';
+    document.getElementById('modal-data-label').textContent = 'Matrícula(s) do imóvel';
+    if (tipoBusca === 'endereco') {
+      const partesEndereco = [
+        getFieldValue('[name="rua_imovel"]'),
+        getFieldValue('[name="numero_imovel"]'),
+        getFieldValue('[name="bairro_imovel"]'),
+        getFieldValue('[name="cep_imovel"]')
+      ].filter(Boolean);
+      dadosImovel = partesEndereco.join(', ') || '—';
+      document.getElementById('modal-data-label').textContent = 'Endereço do imóvel';
+    }
+
     const cartorio = document.getElementById('sel-cartorio').value || '—';
     const cidade = document.getElementById('sel-cidade').value || '';
     const estado = (document.getElementById('sel-estado').value || '').split(' - ')[0];
 
-    document.getElementById('modal-mats').textContent = mats;
+    document.getElementById('s4summary').textContent = enderecoInformado ? [rua, numero, bairro].filter(Boolean).join(', ') : 'Envio por e-mail';
+    document.getElementById('modal-mats').textContent = dadosImovel;
     document.getElementById('modal-cartorio').textContent =
       cartorio.toUpperCase() + (cidade ? ' DE ' + cidade.toUpperCase() : '') + (estado ? ' - ' + estado : '');
 

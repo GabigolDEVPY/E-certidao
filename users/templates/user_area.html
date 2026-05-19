@@ -16,9 +16,9 @@
   <div class="info-box" style="margin-bottom:24px;">
     <div>
       <strong>{{ user.get_full_name|default:user.username }}</strong>
-      CPF/CNPJ: {{ user.cpf_cnpj }}<br>
+      CPF/CNPJ: {{ user.cpf_cnpj_mascarado }}<br>
       E-mail: {{ user.email }}<br>
-      Telefone: {{ user.telefone }}
+      Telefone: {{ user.telefone_mascarado }}
     </div>
   </div>
 
@@ -116,7 +116,10 @@
             Data: {{ pedido.criado_em|date:"d/m/Y" }}<br>
             Total: R$ {{ pedido.total|floatformat:2 }}
           </div>
-          <a href="{% url 'pagar_pedido' pedido.id %}" class="info-box-edit">Pagar &#8594;</a>
+          <form method="POST" action="{% url 'pagar_pedido' pedido.id %}">
+            {% csrf_token %}
+            <button type="submit" class="info-box-edit" style="background:none;border:0;padding:0;">Pagar &#8594;</button>
+          </form>
         </div>
       {% endfor %}
     {% else %}

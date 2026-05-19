@@ -21,6 +21,7 @@ const tabLabels = {
 // ─── RENDER ───
 function renderServices(tab, query = '') {
   const list = document.getElementById('serviceList');
+  if (!list) return;
 
   const filtered = allServices.filter(s => {
     const matchTab = s.categories.includes(tab);
@@ -138,4 +139,44 @@ function openServiceModal(service) {
 }
 
 // ─── INIT ───
-renderServices('todos');
+if (document.getElementById('serviceList')) {
+  renderServices('todos');
+}
+
+function readCookie(name) {
+  return document.cookie
+    .split('; ')
+    .find(row => row.startsWith(name + '='))
+    ?.split('=')[1];
+}
+
+function saveCookieConsent(value) {
+  document.cookie = 'ecertidao_cookie_consent=' + encodeURIComponent(value)
+    + '; Max-Age=15552000; Path=/; SameSite=Lax';
+}
+
+function initCookieConsent() {
+  const banner = document.getElementById('cookieConsentBanner');
+  if (!banner || readCookie('ecertidao_cookie_consent')) return;
+
+  banner.hidden = false;
+
+  const accept = document.getElementById('acceptCookies');
+  const essentials = document.getElementById('essentialCookies');
+
+  if (accept) {
+    accept.addEventListener('click', function () {
+      saveCookieConsent('accepted');
+      banner.hidden = true;
+    });
+  }
+
+  if (essentials) {
+    essentials.addEventListener('click', function () {
+      saveCookieConsent('essential');
+      banner.hidden = true;
+    });
+  }
+}
+
+document.addEventListener('DOMContentLoaded', initCookieConsent);
