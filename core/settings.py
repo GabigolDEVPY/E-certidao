@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'home',
     'users',
     'certidao',
+    'billing',
 ]
 
 MIDDLEWARE = [
@@ -149,3 +150,10 @@ X_FRAME_OPTIONS = 'DENY'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ──────────────────────────────────────
+# Stripe
+# ──────────────────────────────────────
+STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY', '')
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY', '')
+STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET', '')

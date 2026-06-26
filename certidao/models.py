@@ -165,6 +165,13 @@ class OrderImovel(models.Model):
         default=0.00
     )
 
+    stripe_checkout_session_id = models.CharField(
+        max_length=255,
+        blank=True,
+        default='',
+        help_text='ID da sessão de checkout do Stripe',
+    )
+
     @property
     def email_mascarado(self):
         return mask_email(self.email)

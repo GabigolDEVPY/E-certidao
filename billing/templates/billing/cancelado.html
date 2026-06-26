@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div style="
+  max-width: 520px;
+  margin: 80px auto;
+  padding: 48px 32px;
+  text-align: center;
+  background: var(--paper, #fff);
+  border: 1px solid var(--rule, #e5e7eb);
+  border-radius: 12px;
+">
+  <div style="
+    width: 64px; height: 64px;
+    margin: 0 auto 24px;
+    background: #fef2f2;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  ">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5">
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  </div>
+
+  <h1 style="font-size: 24px; font-weight: 700; color: #111; margin-bottom: 12px;">
+    Pagamento cancelado
+  </h1>
+
+  <p style="font-size: 15px; color: #6b7280; line-height: 1.6; margin-bottom: 32px;">
+    O pagamento não foi concluído. Seu pedido continua salvo e você pode
+    tentar novamente a qualquer momento.
+  </p>
+
+  <a href="{% url 'home' %}"
+     style="
+       display: inline-block;
+       padding: 12px 32px;
+       background: #111;
+       color: #fff;
+       font-size: 14px;
+       font-weight: 600;
+       border-radius: 8px;
+       text-decoration: none;
+       transition: opacity .2s;
+     "
+     onmouseover="this.style.opacity='0.85'"
+     onmouseout="this.style.opacity='1'"
+  >
+    Voltar ao início
+  </a>
+</div>
+
+{% endblock %}

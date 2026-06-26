@@ -18,7 +18,7 @@ class ImovelView(LoginRequiredMixin, View):
         form = OrderImovelForm(request.POST)
 
         if form.is_valid():
-            criar_pedido_imovel(form, request.user)
-            messages.success(request, 'Pedido realizado com sucesso!')
-            return redirect('area_cliente')
+            pedido = criar_pedido_imovel(form, request.user)
+            return redirect('billing:criar_checkout', pedido_id=pedido.id)
         return render(request, self.template_name, {'form': form})
+
