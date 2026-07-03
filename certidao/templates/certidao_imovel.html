@@ -662,38 +662,91 @@
     goToStep(2);
   }
 
-  /* ── step 2 ── */
-  const cidadesPorEstado = {
-    'MG - Minas Gerais': ['Belo Horizonte', 'Betim', 'Contagem', 'Divinópolis', 'Governador Valadares', 'Ipatinga', 'Juiz de Fora', 'Montes Claros', 'Perdigão', 'Pitangui', 'Poços de Caldas', 'Ribeirão das Neves', 'Sete Lagoas', 'Uberlândia', 'Uberaba'],
-    'SP - São Paulo': ['Campinas', 'Guarulhos', 'Osasco', 'Ribeirão Preto', 'Santo André', 'São Bernardo do Campo', 'São José dos Campos', 'São Paulo', 'Sorocaba'],
-    'RJ - Rio de Janeiro': ['Belford Roxo', 'Duque de Caxias', 'Niterói', 'Nova Iguaçu', 'Petrópolis', 'Rio de Janeiro', 'São Gonçalo'],
-    'RS - Rio Grande do Sul': ['Canoas', 'Caxias do Sul', 'Gravataí', 'Novo Hamburgo', 'Pelotas', 'Porto Alegre', 'Santa Maria'],
-    'PR - Paraná': ['Cascavel', 'Curitiba', 'Foz do Iguaçu', 'Londrina', 'Maringá', 'Ponta Grossa', 'São José dos Pinhais'],
-    'BA - Bahia': ['Camaçari', 'Feira de Santana', 'Ilhéus', 'Itabuna', 'Juazeiro', 'Salvador', 'Vitória da Conquista'],
-  };
+  /* ── step 2 — carregamento dinâmico via API ── */
+
+  function getUF() {
+    var val = document.getElementById('sel-estado').value;
+    return val ? val.split(' - ')[0].trim() : '';
+  }
+
+  function setSelectLoading(sel, msg) {
+    sel.innerHTML = '<option value="">' + msg + '</option>';
+    sel.disabled = true;
+  }
+
+  function setSelectReady(sel) {
+    sel.disabled = false;
+  }
 
   function onEstadoChange() {
-    const estado = document.getElementById('sel-estado').value;
-    const selC = document.getElementById('sel-cidade');
-    const selCar = document.getElementById('sel-cartorio');
-    selC.innerHTML = '<option value="">Selecione a cidade...</option>';
+    var selC   = document.getElementById('sel-cidade');
+    var selCar = document.getElementById('sel-cartorio');
+    var uf     = getUF();
+
     selCar.innerHTML = '<option value="">Selecione a cidade primeiro...</option>';
-    const cidades = cidadesPorEstado[estado] || [];
-    cidades.forEach(c => {
-      const o = document.createElement('option');
-      o.textContent = c;
-      selC.appendChild(o);
-    });
+    selCar.disabled = false;
+
+    if (!uf) {
+      selC.innerHTML = '<option value="">Selecione o estado primeiro...</option>';
+      selC.disabled = false;
+      return;
+    }
+
+    setSelectLoading(selC, 'Carregando cidades...');
+
+    fetch('/certidao/api/cidades/?uf=' + encodeURIComponent(uf))
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        setSelectReady(selC);
+        if (!data.cidades || data.cidades.length === 0) {
+          selC.innerHTML = '<option value="">Nenhuma cidade encontrada</option>';
+          return;
+        }
+        selC.innerHTML = '<option value="">Selecione a cidade...</option>';
+        data.cidades.forEach(function(c) {
+          var o = document.createElement('option');
+          o.value = c; o.textContent = c;
+          selC.appendChild(o);
+        });
+      })
+      .catch(function() {
+        setSelectReady(selC);
+        selC.innerHTML = '<option value="">Erro ao carregar - tente novamente</option>';
+      });
   }
 
   function onCidadeChange() {
-    const cidade = document.getElementById('sel-cidade').value;
-    const sel = document.getElementById('sel-cartorio');
-    sel.innerHTML = '<option value="">Selecione o cartório...</option>';
-    if (cidade) {
-      ['OFÍCIO DO REGISTRO DE IMÓVEIS', '1º CARTÓRIO DE REGISTRO DE IMÓVEIS', '2º CARTÓRIO DE REGISTRO DE IMÓVEIS', 'CARTÓRIO DE NOTAS E REGISTRO']
-        .forEach(c => { const o = document.createElement('option'); o.textContent = c; sel.appendChild(o); });
+    var cidade = document.getElementById('sel-cidade').value;
+    var uf     = getUF();
+    var sel    = document.getElementById('sel-cartorio');
+
+    if (!cidade) {
+      sel.innerHTML = '<option value="">Selecione a cidade primeiro...</option>';
+      sel.disabled = false;
+      return;
     }
+
+    setSelectLoading(sel, 'Carregando cartorios...');
+
+    fetch('/certidao/api/cartorios/?cidade=' + encodeURIComponent(cidade) + '&uf=' + encodeURIComponent(uf))
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        setSelectReady(sel);
+        if (!data.cartorios || data.cartorios.length === 0) {
+          sel.innerHTML = '<option value="">Nenhum cartorio encontrado</option>';
+          return;
+        }
+        sel.innerHTML = '<option value="">Selecione o cartorio...</option>';
+        data.cartorios.forEach(function(c) {
+          var o = document.createElement('option');
+          o.value = c; o.textContent = c;
+          sel.appendChild(o);
+        });
+      })
+      .catch(function() {
+        setSelectReady(sel);
+        sel.innerHTML = '<option value="">Erro ao carregar - tente novamente</option>';
+      });
   }
 
   function nextStep2() {
@@ -827,17 +880,45 @@
   /* ── Restaurar estado após POST com erros ── */
   document.addEventListener('DOMContentLoaded', function () {
 
-    // 1) Restaurar selects dinâmicos
+    // 1) Restaurar selects dinamicos (fetch e assíncrono, encadeamos promises)
     {% if form.estado.value %}
-    document.getElementById('sel-estado').value = "{{ form.estado.value|escapejs }}";
-    onEstadoChange();
-    {% endif %}
-    {% if form.cidade.value %}
-    document.getElementById('sel-cidade').value = "{{ form.cidade.value|escapejs }}";
-    onCidadeChange();
-    {% endif %}
-    {% if form.cartorio.value %}
-    document.getElementById('sel-cartorio').value = "{{ form.cartorio.value|escapejs }}";
+    var _estadoRestaurar = '{{ form.estado.value|escapejs }}';
+    var _cidadeRestaurar = '{{ form.cidade.value|escapejs }}';
+    var _cartorioRestaurar = '{{ form.cartorio.value|escapejs }}';
+    document.getElementById('sel-estado').value = _estadoRestaurar;
+    var _uf = _estadoRestaurar ? _estadoRestaurar.split(' - ')[0].trim() : '';
+    if (_uf) {
+      var _selC = document.getElementById('sel-cidade');
+      fetch('/certidao/api/cidades/?uf=' + encodeURIComponent(_uf))
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          _selC.innerHTML = '<option value="">Selecione a cidade...</option>';
+          _selC.disabled = false;
+          (data.cidades || []).forEach(function(c) {
+            var o = document.createElement('option');
+            o.value = c; o.textContent = c;
+            _selC.appendChild(o);
+          });
+          if (_cidadeRestaurar) {
+            _selC.value = _cidadeRestaurar;
+            return fetch('/certidao/api/cartorios/?cidade=' + encodeURIComponent(_cidadeRestaurar) + '&uf=' + encodeURIComponent(_uf));
+          }
+        })
+        .then(function(r) { return r ? r.json() : null; })
+        .then(function(data) {
+          if (!data) return;
+          var _selCar = document.getElementById('sel-cartorio');
+          _selCar.innerHTML = '<option value="">Selecione o cartorio...</option>';
+          _selCar.disabled = false;
+          (data.cartorios || []).forEach(function(c) {
+            var o = document.createElement('option');
+            o.value = c; o.textContent = c;
+            _selCar.appendChild(o);
+          });
+          if (_cartorioRestaurar) _selCar.value = _cartorioRestaurar;
+        })
+        .catch(function() {});
+    }
     {% endif %}
 
     // 2) Restaurar matrículas

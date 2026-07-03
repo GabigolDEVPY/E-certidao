@@ -182,4 +182,9 @@ class OrderImovel(models.Model):
     
     def __str__(self):
         return f'{self.nome_solicitante} - {self.tipo_certidao}'
+
+class Cartorio(models.Model):
+    uf = models.CharField(max_length=2, null=False, blank=False)
+    cidade = models.CharField(max_length=200, null=False, blank=False)
+    nome = models.CharField(max_length=200, null=False, blank=False)
     

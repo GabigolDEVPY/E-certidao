@@ -84,7 +84,17 @@ def processar_evento_stripe(payload, sig_header):
         return False
 
     if event['type'] == 'checkout.session.completed':
-        _marcar_como_pago(event['data']['object'])
+        try:
+            _marcar_como_pago(event['data']['object'])
+        except Exception as e:
+            import traceback
+            logger.exception('Erro ao processar checkout.session.completed:')
+            try:
+                with open('stripe_webhook_error.log', 'w', encoding='utf-8') as f:
+                    traceback.print_exc(file=f)
+            except Exception:
+                pass
+            return False
 
     return True
 
@@ -93,9 +103,13 @@ def processar_evento_stripe(payload, sig_header):
 def _marcar_como_pago(session_data):
     """Atualiza Payment e OrderImovel quando o pagamento é confirmado."""
 
-    session_id = session_data.get('id', '')
-    payment_intent = session_data.get('payment_intent', '')
-    pedido_id = session_data.get('metadata', {}).get('pedido_id')
+    # Converte o StripeObject para dicionário Python para evitar problemas com .get()
+    session_dict = session_data.to_dict() if hasattr(session_data, 'to_dict') else dict(session_data)
+
+    session_id = session_dict.get('id') or ''
+    payment_intent = session_dict.get('payment_intent') or ''
+    metadata = session_dict.get('metadata') or {}
+    pedido_id = metadata.get('pedido_id')
 
     if not pedido_id:
         logger.warning('Evento sem pedido_id nos metadata.')
@@ -119,3 +133,4 @@ def _marcar_como_pago(session_data):
     pedido.save(update_fields=['is_paid', 'status', 'atualizado_em'])
 
     logger.info(f'Pedido #{pedido_id} marcado como pago.')
+
