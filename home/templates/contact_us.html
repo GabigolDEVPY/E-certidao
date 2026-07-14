@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Contato{% endblock %}
+
+{% block content %}
+<div class="container main-content">
+  <div class="form-wrapper">
+
+    <div class="form-header">
+      <h1>Contato</h1>
+      <span class="sub">Entre em contato conosco agora mesmo! Nós lhe retornaremos o mais breve possível.</span>
+    </div>
+
+    <div class="step-block is-active">
+      <div class="step-body" style="display:block; border-top:none; padding-top:22px;">
+
+        <form class="site-form" method="POST" action="">
+
+          <div class="field-full">
+            <label class="field-label" for="nome">Nome<span class="req">*</span></label>
+            <input class="field-input" type="text" id="nome" name="nome" required>
+          </div>
+
+          <div class="field-full">
+            <label class="field-label" for="email">E-mail<span class="req">*</span></label>
+            <input class="field-input" type="email" id="email" name="email" required>
+          </div>
+
+          <div class="field-full">
+            <label class="field-label" for="telefone">Telefone<span class="req">*</span></label>
+            <div class="phone-wrap">
+              <span class="phone-flag">🇧🇷 +55</span>
+              <input type="tel" id="telefone" name="telefone" placeholder="(00) 00000-0000"
+                     maxlength="15" inputmode="numeric" required>
+            </div>
+          </div>
+
+          <div class="field-full">
+            <label class="field-label" for="mensagem">Mensagem<span class="req">*</span></label>
+            <textarea class="field-input" id="mensagem" name="mensagem" rows="6" required></textarea>
+          </div>
+
+          <div class="step-actions" style="border-top:none; padding-top:6px; margin-top:6px;">
+            <button type="submit" class="submit-btn" style="width:auto; padding:13px 32px;">
+              Enviar mensagem
+            </button>
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  (function () {
+    var telefone = document.getElementById('telefone');
+    if (!telefone) return;
+
+    telefone.addEventListener('input', function (e) {
+      var v = e.target.value.replace(/\D/g, '').slice(0, 11);
+
+      if (v.length > 10) {
+        // celular: (00) 00000-0000
+        v = v.replace(/^(\d{2})(\d{5})(\d{0,4}).*/, '($1) $2-$3');
+      } else if (v.length > 5) {
+        // fixo: (00) 0000-0000
+        v = v.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
+      } else if (v.length > 2) {
+        v = v.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
+      } else if (v.length > 0) {
+        v = v.replace(/^(\d*)/, '($1');
+      }
+
+      e.target.value = v;
+    });
+  })();
+</script>
+{% endblock %}
