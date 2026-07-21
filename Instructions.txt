@@ -1,0 +1,11 @@
+No tipo de pedido para CERTIDÃO INTEIRO TEOR eu preciso que voce retire em dados da certidão a opção de tenho o endereço do imóvel.
+
+No tipo de pedido para CERTIDÃO DE BUSCA CPF/CNPJ eu preciso que voce troque a opção de tipo de identificação e adcionar matrícula(s) por uma opção onde o usuario possa escrever o número do CPF ou CNPJ e coloque no form o validador de cnpj e cpf, e retire também a opção de tenho a matrícula/transcrição e Tenho o endereço do imóvel.
+
+No tipo de pedido para CERTIDÃO DE FILIAÇÃO DE DOMÍNIO eu preciso que voce retire a opção de tenho o endereço do imóvel e coloque em baixo da opção de adicionar matrículas(s) um form para que seja escrito a quantidade de anos que deve ser retroagido na matrícula.
+
+No tipo de pedido para CERTIDÃO ATUALIZADA + ÔNUS REAIS + AÇÕES eu preciso que voce retire a opção de tenho o endereço do imóvel e retire da opção na frente ver exemplo do número do número de todos os tipos de certidão que tenhão a opção de adicionar matrículas(s).
+
+Faça uma nova opção de certidão nos tipos de certidão com o nome de CERTIDÃO INTEIRO TEOR - LIVRO 03, com a descrição Certidão de Registro Auxiliar, essa pode ser igual o pedido por CERTIDÃO DE INTEIRO TEOR, só que na parte que pergunta de número de matrícula tem que ser alterada para número de registro auxiliar e retirar as partes que perguntam sobre transcrião e preciso que esse tipo de certidão fique logo a baixo do tipo de certidão CERTIDÃO INTEIRO TEOR 
+
+Faça as alterações tanto no back end e front end
