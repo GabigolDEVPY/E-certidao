@@ -140,6 +140,12 @@
           {% if pedido.matriculas %}
             Matrículas: {{ pedido.matriculas }}<br>
           {% endif %}
+          {% if pedido.cpf_cnpj_busca %}
+            CPF/CNPJ da busca: {{ pedido.cpf_cnpj_busca }}<br>
+          {% endif %}
+          {% if pedido.anos_retroagir %}
+            Anos a retroagir: {{ pedido.anos_retroagir }}<br>
+          {% endif %}
           {% if pedido.tipo_identificacao %}
             Identificação: {{ pedido.get_tipo_identificacao_display }}<br>
           {% endif %}

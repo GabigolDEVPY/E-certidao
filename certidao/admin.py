@@ -13,7 +13,7 @@ class OrderImovelAdmin(admin.ModelAdmin):
         'is_paid',
     )
     list_filter = ('tipo_certidao', 'is_paid', 'criado_em', 'atualizado_em')
-    search_fields = ('nome_solicitante', 'email', 'estado', 'cidade', 'matriculas')
+    search_fields = ('nome_solicitante', 'email', 'estado', 'cidade', 'matriculas', 'cpf_cnpj_busca')
     ordering = ('-criado_em',)
 
 @admin.register(Cartorio)

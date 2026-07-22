@@ -1,6 +1,7 @@
 import logging
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.decorators import method_decorator
@@ -24,7 +25,16 @@ class CriarCheckoutView(LoginRequiredMixin, View):
             usuario=request.user,
         )
 
-        session = criar_checkout_session(pedido, request)
+        try:
+            session = criar_checkout_session(pedido, request)
+        except ImproperlyConfigured as exc:
+            logger.warning('Checkout sem Price ID configurado: %s', exc)
+            messages.error(
+                request,
+                'O valor deste tipo de certidão ainda não foi configurado. Entre em contato com o suporte.',
+            )
+            return redirect('certidao:imovel')
+
         return redirect(session.url)
 
 

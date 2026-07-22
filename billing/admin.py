@@ -5,9 +5,27 @@ from .models import Product, Payment
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('nome', 'preco', 'stripe_product_id', 'stripe_price_id', 'ativo')
-    list_filter = ('ativo',)
-    search_fields = ('nome', 'stripe_product_id')
+    list_display = (
+        'nome',
+        'tipo_certidao',
+        'preco',
+        'stripe_price_id',
+        'ativo',
+    )
+    list_filter = ('ativo', 'tipo_certidao')
+    search_fields = ('nome', 'stripe_product_id', 'stripe_price_id')
+    fieldsets = (
+        ('Tipo de certidão', {
+            'fields': ('tipo_certidao', 'nome', 'descricao', 'ativo'),
+            'description': 'Cadastre um produto ativo para cada tipo de certidão e preencha o Price ID correspondente.',
+        }),
+        ('Stripe', {
+            'fields': ('stripe_product_id', 'stripe_price_id'),
+        }),
+        ('Preço', {
+            'fields': ('preco',),
+        }),
+    )
 
 
 @admin.register(Payment)

@@ -898,6 +898,34 @@ body {
   transition: border-color .15s, background .15s;
 }
 
+.option-card-main {
+  min-width: 0;
+}
+
+.option-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.option-card-price {
+  color: #2e7d32;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.option-card-price.is-pending {
+  color: var(--ink-light);
+}
+
+.message-error {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #991b1b;
+}
+
 .option-card:hover {
   background: var(--paper);
 }

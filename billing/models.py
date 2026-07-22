@@ -1,11 +1,27 @@
 from django.db import models
+from django.db.models import Q
 
 
 class Product(models.Model):
     """Produto cadastrado no sistema e vinculado ao Stripe."""
 
+    TIPOS_CERTIDAO = [
+        ('inteiro-teor', 'Certidão Inteiro Teor'),
+        ('inteiro-teor-livro-03', 'Certidão Inteiro Teor - Livro 03'),
+        ('onus-reais', 'Certidão de Busca CPF/CNPJ'),
+        ('vintenaria', 'Certidão de Filiação de Domínio'),
+        ('atualizada', 'Certidão Atualizada + Ônus Reais + Ações'),
+    ]
+
     nome = models.CharField(max_length=255)
     descricao = models.TextField(blank=True, default='')
+    tipo_certidao = models.CharField(
+        max_length=50,
+        choices=TIPOS_CERTIDAO,
+        blank=True,
+        default='',
+        help_text='Tipo de certidão que usará este Price ID no checkout.',
+    )
 
     # IDs do Stripe
     stripe_product_id = models.CharField(
@@ -30,9 +46,17 @@ class Product(models.Model):
     class Meta:
         verbose_name = 'Produto'
         verbose_name_plural = 'Produtos'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['tipo_certidao'],
+                condition=Q(ativo=True) & ~Q(tipo_certidao=''),
+                name='unique_active_product_per_certidao',
+            ),
+        ]
 
     def __str__(self):
-        return f'{self.nome} - R${self.preco}'
+        tipo = self.get_tipo_certidao_display() if self.tipo_certidao else 'sem tipo'
+        return f'{self.nome} ({tipo}) - R${self.preco}'
 
 
 class Payment(models.Model):

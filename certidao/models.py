@@ -7,8 +7,9 @@ from core.privacy import mask_email, mask_phone
 class OrderImovel(models.Model):
     TIPOS_CERTIDAO = [
         ('inteiro-teor', 'Certidão Inteiro Teor'),
-        ('onus-reais', 'Certidão de Ônus Reais'),
-        ('vintenaria', 'Certidão Vintenária'),
+        ('inteiro-teor-livro-03', 'Certidão Inteiro Teor - Livro 03'),
+        ('onus-reais', 'Certidão de Busca CPF/CNPJ'),
+        ('vintenaria', 'Certidão de Filiação de Domínio'),
         ('atualizada', 'Certidão Atualizada + Ônus Reais + Ações'),
     ]
 
@@ -28,7 +29,7 @@ class OrderImovel(models.Model):
 
     TIPO_BUSCA = [
         ('matricula', 'Tenho matrícula/transcrição'),
-        ('endereco', 'Tenho endereço do imóvel'),
+        ('cpf_cnpj', 'CPF/CNPJ'),
     ]
 
     # =========================
@@ -84,6 +85,17 @@ class OrderImovel(models.Model):
         blank=True,
         null=True,
         help_text="Separar múltiplas matrículas por vírgula"
+    )
+
+    cpf_cnpj_busca = EncryptedCharField(
+        max_length=18,
+        blank=True,
+        null=True,
+    )
+
+    anos_retroagir = models.PositiveIntegerField(
+        blank=True,
+        null=True,
     )
 
     # =========================

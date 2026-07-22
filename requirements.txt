@@ -1,6 +1,7 @@
 asgiref==3.11.1
 cryptography==46.0.3
 Django==6.0.3
+python-dotenv>=1.0.0
 sqlparse==0.5.5
 stripe>=9.0.0
 tzdata==2025.3

@@ -13,6 +13,13 @@
          value="{{ form.matriculas.value|default:'' }}">
 
   <div class="form-wrapper">
+    {% if messages %}
+      {% for message in messages %}
+      <div class="attention-box{% if message.tags %} message-{{ message.tags }}{% endif %}">
+        {{ message }}
+      </div>
+      {% endfor %}
+    {% endif %}
 
     <!-- ══ STEP 1 — Tipo de Certidão ══ -->
     <div class="step-block is-active" id="step1">
@@ -42,34 +49,18 @@
         </div>
 
         <div class="option-cards" id="cardsTipo">
-          <div class="option-card {% if form.tipo_certidao.value == 'inteiro-teor' or not form.tipo_certidao.value %}is-selected{% endif %}" data-value="inteiro-teor" onclick="selectCard(this,'cardsTipo')">
-            <div>
-              <div class="option-card-title">CERTIDÃO INTEIRO TEOR</div>
-              <div class="option-card-sub">Certidão de Imóveis</div>
+          {% for option in certidao_options %}
+          <div class="option-card {% if option.selected %}is-selected{% endif %}" data-value="{{ option.value }}" onclick="selectCard(this,'cardsTipo')">
+            <div class="option-card-main">
+              <div class="option-card-title">{{ option.title }}</div>
+              <div class="option-card-sub">{{ option.description }}</div>
             </div>
-            <div class="option-card-check"></div>
-          </div>
-          <div class="option-card {% if form.tipo_certidao.value == 'onus-reais' %}is-selected{% endif %}" data-value="onus-reais" onclick="selectCard(this,'cardsTipo')">
-            <div>
-              <div class="option-card-title">CERTIDÃO DE BUSCA CPF/CNPJ</div>
-              <div class="option-card-sub">Pesquisa positiva ou negativa de bens pelo CPF/CNPJ</div>
+            <div class="option-card-meta">
+              <div class="option-card-price {% if not option.has_price %}is-pending{% endif %}">{{ option.price_label }}</div>
+              <div class="option-card-check"></div>
             </div>
-            <div class="option-card-check"></div>
           </div>
-          <div class="option-card {% if form.tipo_certidao.value == 'vintenaria' %}is-selected{% endif %}" data-value="vintenaria" onclick="selectCard(this,'cardsTipo')">
-            <div>
-              <div class="option-card-title">CERTIDÃO DE FILIAÇÃO DE DOMÍNIO</div>
-              <div class="option-card-sub">Certidão que retroage ao período necessário</div>
-            </div>
-            <div class="option-card-check"></div>
-          </div>
-          <div class="option-card {% if form.tipo_certidao.value == 'atualizada' %}is-selected{% endif %}" data-value="atualizada" onclick="selectCard(this,'cardsTipo')">
-            <div>
-              <div class="option-card-title">CERTIDÃO ATUALIZADA + ÔNUS REAIS + AÇÕES</div>
-              <div class="option-card-sub">Certidão de imóveis completa incluindo inteiro teor, ônus e ações</div>
-            </div>
-            <div class="option-card-check"></div>
-          </div>
+          {% endfor %}
         </div>
 
         <div class="step-actions">
@@ -271,32 +262,26 @@
             <div class="panel-card-title">Tenho a matrícula / transcrição</div>
             <div class="panel-card-sub">Para os casos onde você possui a matrícula ou transcrição de um ou mais imóveis.</div>
           </div>
-          <div class="panel-card {% if form.tipo_busca.value == 'endereco' %}is-selected{% endif %}" data-value="endereco"
-               onclick="selectPanel(this,'panelIdentif'); showSection('secEndereco'); hideSection('secMatricula')">
-            <div class="panel-card-title">Tenho o endereço do imóvel</div>
-            <div class="panel-card-sub">Para os casos onde você possui apenas o endereço completo do imóvel.</div>
-          </div>
         </div>
 
         <!-- Matrícula -->
         <div id="secMatricula" {% if form.tipo_busca.value == 'endereco' %}style="display:none;"{% endif %}>
+          <div id="tipoIdentificacaoWrap">
           <label class="field-label" style="margin-bottom:9px;">Tipo de identificação</label>
           <div class="radio-group" style="margin-bottom:14px;">
             <div class="radio-item">
               <input type="radio" name="tipo_identificacao" id="ti1" value="matricula" {% if form.tipo_identificacao.value == 'matricula' or not form.tipo_identificacao.value %}checked{% endif %}>
               <label for="ti1">Tenho o número da matrícula do imóvel</label>
             </div>
-            <div class="radio-item">
+            <div class="radio-item" id="radioTranscricaoWrap">
               <input type="radio" name="tipo_identificacao" id="ti2" value="transcricao" {% if form.tipo_identificacao.value == 'transcricao' %}checked{% endif %}>
               <label for="ti2">Tenho o número da transcrição do imóvel</label>
             </div>
           </div>
+          </div>
 
-          <label class="field-label" style="margin-bottom:6px;">
+          <label class="field-label" style="margin-bottom:6px;" id="labelMatricula">
             Adicionar matrícula(s) <span class="req">*</span>
-            <span style="text-transform:none;letter-spacing:0;font-weight:400;margin-left:8px;">
-              <a href="#" onclick="return false;" style="color:var(--accent);font-size:10.5px;">ⓘ Ver exemplo do número</a>
-            </span>
           </label>
           <div class="add-row">
             <input type="text" id="inp-matricula" class="field-input" placeholder="1234567"
@@ -305,6 +290,26 @@
           </div>
           <div class="matricula-list" id="matList"></div>
           {% if form.matriculas.errors %}<div class="field-error">{% for e in form.matriculas.errors %}{{ e }}{% endfor %}</div>{% endif %}
+
+          <div class="field-full" id="anosRetroagirWrap" style="margin-top:14px;display:none;">
+            <label class="field-label">Quantidade de anos a retroagir <span class="req">*</span></label>
+            <input type="number" min="1" max="200" name="anos_retroagir" id="inp-anos-retroagir"
+                   class="field-input {% if form.anos_retroagir.errors %}field-input-error{% endif %}"
+                   placeholder="Ex: 20" value="{{ form.anos_retroagir.value|default:'' }}">
+            {% if form.anos_retroagir.errors %}<div class="field-error">{% for e in form.anos_retroagir.errors %}{{ e }}{% endfor %}</div>{% endif %}
+          </div>
+        </div>
+
+        <div id="secCpfCnpj" style="display:none;">
+          <div class="field-full">
+            <label class="field-label">CPF ou CNPJ <span class="req">*</span></label>
+            <input type="text" name="cpf_cnpj_busca" id="inp-cpf-cnpj-busca"
+                   class="field-input {% if form.cpf_cnpj_busca.errors %}field-input-error{% endif %}"
+                   placeholder="000.000.000-00 ou 00.000.000/0000-00"
+                   value="{{ form.cpf_cnpj_busca.value|default:'' }}"
+                   oninput="maskCpfCnpj(this)">
+            {% if form.cpf_cnpj_busca.errors %}<div class="field-error">{% for e in form.cpf_cnpj_busca.errors %}{{ e }}{% endfor %}</div>{% endif %}
+          </div>
         </div>
 
         <!-- Endereço do imóvel -->
@@ -558,14 +563,14 @@
              style="background:var(--paper);border:1px solid var(--rule);padding:9px 16px;font-size:12px;font-weight:600;color:var(--ink-light);text-align:center;margin-bottom:18px;letter-spacing:.04em;">
         </div>
 
-        <div class="attention-box" style="margin-bottom:0;">
+        <div class="attention-box" id="modal-important-text" style="margin-bottom:0;">
           <strong>Importante:</strong> A certidão será emitida de acordo com os dados de matrícula ou transcrição
           informados, para o cartório selecionado. Confirme todas as informações antes de continuar.
         </div>
       </div>
 
       <div class="step-actions" style="padding:0 22px 22px;border-top:none;margin-top:0;">
-        <button type="button" class="btn-back" onclick="closeConfirmModal()">Editar matrícula(s)</button>
+        <button type="button" class="btn-back" id="modal-edit-btn" onclick="closeConfirmModal()">Editar matrícula(s)</button>
         <button type="submit" class="btn-finish">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="20 6 9 17 4 12" />
@@ -636,6 +641,7 @@
     el.classList.add('is-selected');
     if (groupId === 'cardsTipo') {
       document.getElementById('id_tipo_certidao').value = el.dataset.value;
+      configureCertidaoFields();
     }
   }
 
@@ -653,6 +659,116 @@
   function getFieldValue(selector) {
     const el = document.querySelector(selector);
     return el ? el.value.trim() : '';
+  }
+
+  function getTipoCertidao() {
+    return document.getElementById('id_tipo_certidao').value;
+  }
+
+  function selectMatriculaPanel() {
+    const panel = document.querySelector('#panelIdentif .panel-card[data-value="matricula"]');
+    if (panel) selectPanel(panel, 'panelIdentif');
+  }
+
+  function configureCertidaoFields() {
+    const tipo = getTipoCertidao();
+    const isCpfCnpj = tipo === 'onus-reais';
+    const isLivro03 = tipo === 'inteiro-teor-livro-03';
+    const isFiliacaoDominio = tipo === 'vintenaria';
+    const panelIdentif = document.getElementById('panelIdentif');
+    const panelEndereco = document.getElementById('panelEndereco');
+    const tipoIdentificacaoWrap = document.getElementById('tipoIdentificacaoWrap');
+    const radioTranscricaoWrap = document.getElementById('radioTranscricaoWrap');
+    const labelMatricula = document.getElementById('labelMatricula');
+    const inputMatricula = document.getElementById('inp-matricula');
+    const anosRetroagirWrap = document.getElementById('anosRetroagirWrap');
+    const tiMatricula = document.getElementById('ti1');
+    const panelMatriculaTitle = document.querySelector('#panelIdentif .panel-card[data-value="matricula"] .panel-card-title');
+    const panelMatriculaSub = document.querySelector('#panelIdentif .panel-card[data-value="matricula"] .panel-card-sub');
+
+    if (panelEndereco) panelEndereco.style.display = 'none';
+    hideSection('secEndereco');
+
+    if (isCpfCnpj) {
+      document.getElementById('id_tipo_busca').value = 'cpf_cnpj';
+      if (panelIdentif) panelIdentif.style.display = 'none';
+      hideSection('secMatricula');
+      showSection('secCpfCnpj');
+      return;
+    }
+
+    document.getElementById('id_tipo_busca').value = 'matricula';
+    if (panelIdentif) panelIdentif.style.display = '';
+    selectMatriculaPanel();
+    showSection('secMatricula');
+    hideSection('secCpfCnpj');
+
+    if (tiMatricula) tiMatricula.checked = true;
+    if (tipoIdentificacaoWrap) tipoIdentificacaoWrap.style.display = isLivro03 ? 'none' : '';
+    if (radioTranscricaoWrap) radioTranscricaoWrap.style.display = isLivro03 ? 'none' : '';
+
+    if (panelMatriculaTitle) panelMatriculaTitle.textContent = isLivro03 ? 'Tenho o número de registro auxiliar' : 'Tenho a matrícula / transcrição';
+    if (panelMatriculaSub) {
+      panelMatriculaSub.textContent = isLivro03
+        ? 'Para os casos onde você possui o número de registro auxiliar.'
+        : 'Para os casos onde você possui a matrícula ou transcrição de um ou mais imóveis.';
+    }
+
+    if (labelMatricula) {
+      labelMatricula.innerHTML = (isLivro03 ? 'Adicionar número(s) de registro auxiliar' : 'Adicionar matrícula(s)') + ' <span class="req">*</span>';
+    }
+    if (inputMatricula) inputMatricula.placeholder = isLivro03 ? 'Número do registro auxiliar' : '1234567';
+    if (anosRetroagirWrap) anosRetroagirWrap.style.display = isFiliacaoDominio ? '' : 'none';
+  }
+
+  function maskCpfCnpj(el) {
+    let v = el.value.replace(/\D/g, '').slice(0, 14);
+    if (v.length <= 11) {
+      v = v.replace(/(\d{3})(\d)/, '$1.$2')
+           .replace(/(\d{3})(\d)/, '$1.$2')
+           .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    } else {
+      v = v.replace(/^(\d{2})(\d)/, '$1.$2')
+           .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+           .replace(/\.(\d{3})(\d)/, '.$1/$2')
+           .replace(/(\d{4})(\d{1,2})$/, '$1-$2');
+    }
+    el.value = v;
+  }
+
+  function isCpfCnpjValido(value) {
+    const digits = value.replace(/\D/g, '');
+    if (digits.length === 11) return isCpfValido(digits);
+    if (digits.length === 14) return isCnpjValido(digits);
+    return false;
+  }
+
+  function isCpfValido(cpf) {
+    if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
+    let soma = 0;
+    for (let i = 0; i < 9; i++) soma += parseInt(cpf.charAt(i), 10) * (10 - i);
+    let resto = soma % 11;
+    const digito1 = resto < 2 ? 0 : 11 - resto;
+    if (digito1 !== parseInt(cpf.charAt(9), 10)) return false;
+    soma = 0;
+    for (let i = 0; i < 10; i++) soma += parseInt(cpf.charAt(i), 10) * (11 - i);
+    resto = soma % 11;
+    const digito2 = resto < 2 ? 0 : 11 - resto;
+    return digito2 === parseInt(cpf.charAt(10), 10);
+  }
+
+  function isCnpjValido(cnpj) {
+    if (cnpj.length !== 14 || /^(\d)\1+$/.test(cnpj)) return false;
+    const calc = (base, pesos) => {
+      const soma = pesos.reduce((acc, peso, idx) => acc + parseInt(base.charAt(idx), 10) * peso, 0);
+      const resto = soma % 11;
+      return resto < 2 ? 0 : 11 - resto;
+    };
+    const pesos1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+    const pesos2 = [6].concat(pesos1);
+    const digito1 = calc(cnpj.slice(0, 12), pesos1);
+    const digito2 = calc(cnpj.slice(0, 12) + digito1, pesos2);
+    return cnpj.slice(12) === String(digito1) + String(digito2);
   }
 
   /* ── step 1 ── */
@@ -791,10 +907,28 @@
     const tel = document.getElementById('inp-tel').value.trim();
     const destino = document.getElementById('inp-destino').value.trim();
     if (!nome || !email || !tel || !destino) { alert('Preencha todos os campos obrigatórios.'); return; }
+    const tipoCertidao = getTipoCertidao();
     const tipoBusca = document.getElementById('id_tipo_busca').value;
-    if (tipoBusca === 'matricula' && matriculas.length === 0) {
-      alert('Adicione pelo menos uma matrícula ou transcrição.');
+    if (tipoCertidao === 'onus-reais') {
+      const cpfCnpj = document.getElementById('inp-cpf-cnpj-busca').value.trim();
+      if (!isCpfCnpjValido(cpfCnpj)) {
+        alert('Informe um CPF ou CNPJ válido.');
+        return;
+      }
+      document.getElementById('s3summary').textContent = nome + ' · ' + email;
+      goToStep(4);
       return;
+    }
+    if (tipoBusca === 'matricula' && matriculas.length === 0) {
+      alert(tipoCertidao === 'inteiro-teor-livro-03' ? 'Adicione pelo menos um número de registro auxiliar.' : 'Adicione pelo menos uma matrícula ou transcrição.');
+      return;
+    }
+    if (tipoCertidao === 'vintenaria') {
+      const anos = parseInt(document.getElementById('inp-anos-retroagir').value, 10);
+      if (!anos || anos < 1 || anos > 200) {
+        alert('Informe a quantidade de anos a retroagir.');
+        return;
+      }
     }
     if (tipoBusca === 'endereco') {
       const camposEndereco = ['cep_imovel', 'numero_imovel', 'rua_imovel', 'bairro_imovel'];
@@ -841,8 +975,13 @@
     }
 
     const tipoBusca = document.getElementById('id_tipo_busca').value;
+    const tipoCertidao = getTipoCertidao();
     let dadosImovel = matriculas.length ? matriculas.join(', ') : '—';
-    document.getElementById('modal-data-label').textContent = 'Matrícula(s) do imóvel';
+    document.getElementById('modal-data-label').textContent = tipoCertidao === 'inteiro-teor-livro-03' ? 'Registro auxiliar' : 'Matrícula(s) do imóvel';
+    if (tipoCertidao === 'onus-reais') {
+      dadosImovel = document.getElementById('inp-cpf-cnpj-busca').value.trim() || '—';
+      document.getElementById('modal-data-label').textContent = 'CPF/CNPJ';
+    }
     if (tipoBusca === 'endereco') {
       const partesEndereco = [
         getFieldValue('[name="rua_imovel"]'),
@@ -862,6 +1001,11 @@
     document.getElementById('modal-mats').textContent = dadosImovel;
     document.getElementById('modal-cartorio').textContent =
       cartorio.toUpperCase() + (cidade ? ' DE ' + cidade.toUpperCase() : '') + (estado ? ' - ' + estado : '');
+    document.getElementById('modal-edit-btn').textContent =
+      tipoCertidao === 'onus-reais' ? 'Editar CPF/CNPJ' :
+      (tipoCertidao === 'inteiro-teor-livro-03' ? 'Editar registro auxiliar' : 'Editar matrícula(s)');
+    document.getElementById('modal-important-text').innerHTML =
+      '<strong>Importante:</strong> A certidão será emitida de acordo com os dados informados, para o cartório selecionado. Confirme todas as informações antes de continuar.';
 
     const modal = document.getElementById('confirmModal');
     modal.style.display = 'flex';
@@ -879,6 +1023,10 @@
 
   /* ── Restaurar estado após POST com erros ── */
   document.addEventListener('DOMContentLoaded', function () {
+    configureCertidaoFields();
+
+    var cpfCnpjBusca = document.getElementById('inp-cpf-cnpj-busca');
+    if (cpfCnpjBusca && cpfCnpjBusca.value) maskCpfCnpj(cpfCnpjBusca);
 
     // 1) Restaurar selects dinamicos (fetch e assíncrono, encadeamos promises)
     {% if form.estado.value %}

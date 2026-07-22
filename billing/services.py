@@ -2,70 +2,54 @@ import logging
 
 import stripe
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 from django.db import transaction
 
-from .models import Payment, Product
 from certidao.models import OrderImovel
+from .models import Payment, Product
 
 logger = logging.getLogger(__name__)
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
-# ──────────────────────────────────────
-# Checkout
-# ──────────────────────────────────────
-
 def criar_checkout_session(pedido, request):
     """Cria uma sessão de checkout no Stripe para o pedido."""
 
-    product = Product.objects.filter(ativo=True).first()
+    product = Product.objects.filter(
+        ativo=True,
+        tipo_certidao=pedido.tipo_certidao,
+    ).first()
 
-    if product and product.stripe_price_id:
-        line_items = [{
-            'price': product.stripe_price_id,
-            'quantity': 1,
-        }]
-    else:
-        line_items = [{
-            'price_data': {
-                'currency': 'brl',
-                'product_data': {
-                    'name': f'Certidão - {pedido.get_tipo_certidao_display()}',
-                },
-                'unit_amount': int(pedido.total * 100),
-            },
-            'quantity': 1,
-        }]
-
-    success_url = request.build_absolute_uri('/billing/sucesso/')
-    cancel_url = request.build_absolute_uri('/billing/cancelado/')
+    if not product or not product.stripe_price_id:
+        raise ImproperlyConfigured(
+            f'Configure um Product ativo com stripe_price_id para o tipo de certidão "{pedido.tipo_certidao}".'
+        )
 
     session = stripe.checkout.Session.create(
         payment_method_types=['card'],
-        line_items=line_items,
+        line_items=[{
+            'price': product.stripe_price_id,
+            'quantity': 1,
+        }],
         mode='payment',
-        success_url=success_url + '?session_id={CHECKOUT_SESSION_ID}',
-        cancel_url=cancel_url,
+        success_url=request.build_absolute_uri('/billing/sucesso/') + '?session_id={CHECKOUT_SESSION_ID}',
+        cancel_url=request.build_absolute_uri('/billing/cancelado/'),
         metadata={
             'pedido_id': str(pedido.id),
+            'tipo_certidao': pedido.tipo_certidao,
         },
     )
 
-    # Cria registro de pagamento
     Payment.objects.create(
         pedido=pedido,
         stripe_checkout_session_id=session.id,
-        valor=pedido.total,
+        valor=product.preco,
         status='pendente',
     )
 
     return session
 
-
-# ──────────────────────────────────────
-# Webhook
-# ──────────────────────────────────────
 
 def processar_evento_stripe(payload, sig_header):
     """Valida e processa o evento recebido do Stripe via webhook."""
@@ -86,7 +70,7 @@ def processar_evento_stripe(payload, sig_header):
     if event['type'] == 'checkout.session.completed':
         try:
             _marcar_como_pago(event['data']['object'])
-        except Exception as e:
+        except Exception:
             import traceback
             logger.exception('Erro ao processar checkout.session.completed:')
             try:
@@ -103,7 +87,6 @@ def processar_evento_stripe(payload, sig_header):
 def _marcar_como_pago(session_data):
     """Atualiza Payment e OrderImovel quando o pagamento é confirmado."""
 
-    # Converte o StripeObject para dicionário Python para evitar problemas com .get()
     session_dict = session_data.to_dict() if hasattr(session_data, 'to_dict') else dict(session_data)
 
     session_id = session_dict.get('id') or ''
@@ -133,4 +116,3 @@ def _marcar_como_pago(session_data):
     pedido.save(update_fields=['is_paid', 'status', 'atualizado_em'])
 
     logger.info(f'Pedido #{pedido_id} marcado como pago.')
-
