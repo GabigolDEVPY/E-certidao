@@ -1,3 +1,4 @@
+{% load static %}
 <!-- ═══ HEADER ═══ -->
 <style>
   .logo img{
@@ -15,7 +16,7 @@
       <!-- Logo -->
       <a href="{% url 'home' %}" class="logo">
         <div class="logo-text">
-          <img src="/media/logo.png" alt="logo">
+          <img src="{% static 'img/logo.png' %}" alt="logo">
         </div>
       </a>
 
