@@ -1,0 +1,20 @@
+[Unit]
+Description=E-Certidao Gunicorn
+After=network.target
+
+[Service]
+User=ubuntu
+Group=www-data
+WorkingDirectory=/home/ubuntu/site
+EnvironmentFile=/home/ubuntu/site/.env
+ExecStart=/home/ubuntu/site/venv/bin/gunicorn core.wsgi:application \
+    --bind 127.0.0.1:8000 \
+    --workers 2 \
+    --timeout 120 \
+    --access-logfile /home/ubuntu/site/logs/access.log \
+    --error-logfile  /home/ubuntu/site/logs/error.log
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

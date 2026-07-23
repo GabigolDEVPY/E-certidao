@@ -1,12 +1,30 @@
-# Byte-compiled / optimized / DLL files
+# ── Python ──────────────────────────────
 __pycache__/
 *.py[cod]
 *$py.class
-
-# C extensions
 *.so
 
-# Distribuição / build
+# ── Virtual environment ────────────────
+venv/
+env/
+ENV/
+.venv/
+
+# ── Environment variables ──────────────
+.env
+.env.*
+!.env.example
+
+# ── Django ─────────────────────────────
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+staticfiles/
+static_root/
+media/
+
+# ── Distribuição / build ───────────────
 .Python
 build/
 develop-eggs/
@@ -23,72 +41,44 @@ var/
 .installed.cfg
 *.egg
 
-# Virtual environment
-venv/
-env/
-ENV/
-.venv/
+# ── Arquivos locais (não vão pro repo) ─
+stripe.exe
+*.xlsx
+estados/
+juntar_planilhas.py
+queryes.sql
+Instructions.txt
 
-# Environment variables
-.env
-.env.*
-
-# Django stuff
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-
-# Static files (gerados pelo collectstatic)
-staticfiles/
-static_root/
-
-# Media uploads
-media/
-
-# Pytest
-.pytest_cache/
-
-# Migrations (opcional ignorar)
-# */migrations/*
-# !*/migrations/__init__.py
-
-# IDEs
+# ── IDEs ───────────────────────────────
 .vscode/
 .idea/
 *.sublime-project
 *.sublime-workspace
 
-# OS
+# ── OS ─────────────────────────────────
 .DS_Store
 Thumbs.db
 
-# mypy
+# ── Testes / cobertura ─────────────────
+.pytest_cache/
 .mypy_cache/
-
-# coverage
 htmlcov/
 .coverage
 .coverage.*
 
-# pyinstaller
+# ── pyinstaller ────────────────────────
 *.manifest
 *.spec
 
-# pip
+# ── pip ────────────────────────────────
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Jupyter Notebook
+# ── Jupyter ────────────────────────────
 .ipynb_checkpoints
 
-# pyenv
+# ── pyenv ──────────────────────────────
 .python-version
 
-# celery
+# ── celery ─────────────────────────────
 celerybeat-schedule
-
-# dotenv
-.env.local
-.env.development
-.env.production
