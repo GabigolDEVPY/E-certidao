@@ -2,7 +2,7 @@
 # deploy/setup.sh — roda uma vez na EC2 Ubuntu para configurar tudo
 set -euo pipefail
 
-APP_DIR="/home/ubuntu/site"
+APP_DIR="/home/ubuntu/E-certidao"
 VENV="$APP_DIR/venv"
 
 echo "==> Atualizando sistema..."
@@ -47,6 +47,6 @@ sudo systemctl start ecertidao
 
 echo ""
 echo "✅ Deploy concluído!"
-echo "   - Edite /home/ubuntu/site/.env com suas chaves"
+echo "   - Edite /home/ubuntu/E-certidao/.env com suas chaves"
 echo "   - Reinicie com: sudo systemctl restart ecertidao"
 echo "   - Para SSL: sudo apt install certbot python3-certbot-nginx && sudo certbot --nginx"
