@@ -14,5 +14,6 @@ urlpatterns = [
 
     # Área administrativa
     path('admin/dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('admin/contato/<int:contato_id>/lido/', views.admin_marcar_contato_lido, name='admin_marcar_contato_lido'),
     path('admin/pedido/<int:pedido_id>/status/', views.admin_alterar_status, name='admin_alterar_status'),
 ]

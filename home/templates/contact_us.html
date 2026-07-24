@@ -15,29 +15,49 @@
       <div class="step-body" style="display:block; border-top:none; padding-top:22px;">
 
         <form class="site-form" method="POST" action="">
+          {% csrf_token %}
+
+          {% if messages %}
+            {% for message in messages %}
+              <div class="attention-box message-{{ message.tags }}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
 
           <div class="field-full">
             <label class="field-label" for="nome">Nome<span class="req">*</span></label>
-            <input class="field-input" type="text" id="nome" name="nome" required>
+            {{ form.nome }}
+            {% if form.nome.errors %}
+              <div class="field-error">{{ form.nome.errors|striptags }}</div>
+            {% endif %}
           </div>
 
           <div class="field-full">
             <label class="field-label" for="email">E-mail<span class="req">*</span></label>
-            <input class="field-input" type="email" id="email" name="email" required>
+            {{ form.email }}
+            {% if form.email.errors %}
+              <div class="field-error">{{ form.email.errors|striptags }}</div>
+            {% endif %}
           </div>
 
           <div class="field-full">
             <label class="field-label" for="telefone">Telefone<span class="req">*</span></label>
             <div class="phone-wrap">
               <span class="phone-flag">🇧🇷 +55</span>
-              <input type="tel" id="telefone" name="telefone" placeholder="(00) 00000-0000"
-                     maxlength="15" inputmode="numeric" required>
+              {{ form.telefone }}
             </div>
+            {% if form.telefone.errors %}
+              <div class="field-error">{{ form.telefone.errors|striptags }}</div>
+            {% endif %}
           </div>
 
           <div class="field-full">
             <label class="field-label" for="mensagem">Mensagem<span class="req">*</span></label>
-            <textarea class="field-input" id="mensagem" name="mensagem" rows="6" required></textarea>
+            {{ form.mensagem }}
+            {% if form.mensagem.errors %}
+              <div class="field-error">{{ form.mensagem.errors|striptags }}</div>
+            {% endif %}
           </div>
 
           <div class="step-actions" style="border-top:none; padding-top:6px; margin-top:6px;">

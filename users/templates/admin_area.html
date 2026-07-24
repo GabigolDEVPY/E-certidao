@@ -52,6 +52,64 @@
     {% endfor %}
   {% endif %}
 
+  <div class="content-header" style="margin-top:28px;">
+    <h1>Mensagens de contato</h1>
+    <span class="content-count">{{ contact_unread_count }} nova{{ contact_unread_count|pluralize:"s" }}</span>
+  </div>
+
+  {% if contact_messages %}
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Nome</th>
+            <th>E-mail</th>
+            <th>Telefone</th>
+            <th>Mensagem</th>
+            <th>Status</th>
+            <th>Acoes</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for contato in contact_messages %}
+          <tr class="{% if not contato.lida %}admin-row-unread{% endif %}">
+            <td>{{ contato.criado_em|date:"d/m/Y H:i" }}</td>
+            <td><strong>{{ contato.nome }}</strong></td>
+            <td>{{ contato.email }}</td>
+            <td>{{ contato.telefone }}</td>
+            <td>{{ contato.mensagem|linebreaksbr }}</td>
+            <td>
+              <span class="status-badge {% if contato.lida %}status-entregue{% else %}status-pendente{% endif %}">
+                {% if contato.lida %}Lida{% else %}Nova{% endif %}
+              </span>
+            </td>
+            <td>
+              {% if not contato.lida %}
+                <form method="POST" action="{% url 'admin_marcar_contato_lido' contato.id %}">
+                  {% csrf_token %}
+                  <button type="submit" class="admin-btn-detail">Marcar lida</button>
+                </form>
+              {% else %}
+                <span style="font-size:12px;color:var(--ink-light);">Tratada</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="attention-box">
+      Nenhuma mensagem de contato recebida ainda.
+    </div>
+  {% endif %}
+
+  <div class="content-header" style="margin-top:28px;">
+    <h1>Pedidos</h1>
+    <span class="content-count">{{ contadores.total }} pedido{{ contadores.total|pluralize:"s" }}</span>
+  </div>
+
   <!-- Listagem de Pedidos -->
   {% if pedidos %}
     <div class="admin-table-wrap">

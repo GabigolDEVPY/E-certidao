@@ -11,6 +11,7 @@ from .forms import EmailOrUsernameAuthenticationForm, RegisterForm
 from .models import User
 from . import services as user_services
 from certidao import services as pedido_services
+from home.models import ContactMessage
 
 
 # ═══════════════════════════════════════════
@@ -91,7 +92,23 @@ def admin_dashboard(request):
         'contadores': pedido_services.contadores_pedidos(),
         'status_filter': status_filter,
         'status_choices': pedido_services.STATUS_CHOICES,
+        'contact_messages': ContactMessage.objects.all()[:10],
+        'contact_unread_count': ContactMessage.objects.filter(lida=False).count(),
     })
+
+
+@staff_member_required(login_url='login')
+@require_POST
+def admin_marcar_contato_lido(request, contato_id):
+    contato = ContactMessage.objects.filter(id=contato_id).first()
+    if contato is None:
+        messages.error(request, 'Mensagem de contato nao encontrada.')
+    else:
+        contato.lida = True
+        contato.save(update_fields=['lida', 'atualizado_em'])
+        messages.success(request, f'Mensagem de {contato.nome} marcada como lida.')
+
+    return redirect('admin_dashboard')
 
 
 @staff_member_required(login_url='login')
