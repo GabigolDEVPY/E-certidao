@@ -37,6 +37,18 @@ Se o projeto estiver em outra pasta, informe o caminho:
 APP_DIR=/caminho/do/projeto bash deploy/update.sh
 ```
 
+## Conferir depois do deploy
+
+```bash
+curl -I https://certidaobr.com/favicon.ico
+curl -I https://certidaobr.com/favicon-48x48.png
+curl -I https://certidaobr.com/site.webmanifest
+curl -s https://certidaobr.com/contact/ | grep csrfmiddlewaretoken
+curl -s https://certidaobr.com/ | grep 'favicon-48x48.png'
+```
+
+Os comandos acima devem retornar `200` para os icones/manifest e encontrar os trechos no HTML.
+
 ## Comandos uteis
 
 ```bash
