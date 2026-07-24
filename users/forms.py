@@ -51,7 +51,7 @@ def validar_cnpj(cnpj):
 
 class RegisterForm(UserCreationForm):
     first_name = forms.CharField(max_length=50, required=True, label="Nome")
-    last_name  = forms.CharField(max_length=50, required=True, label="Sobrenome")
+    last_name  = forms.CharField(max_length=50, required=False, label="Sobrenome")
     aceite_privacidade = forms.BooleanField(
         required=True,
         label="Li e aceito a Política de Privacidade e o tratamento dos meus dados para criação da conta.",
@@ -89,6 +89,9 @@ class RegisterForm(UserCreationForm):
 
         return telefone
 
+    def clean_last_name(self):
+        return (self.cleaned_data.get('last_name') or '').strip()
+
     def clean_cpf_cnpj(self):
         cpf_cnpj = self.cleaned_data.get('cpf_cnpj')
         numeros = re.sub(r'\D', '', cpf_cnpj)
@@ -108,6 +111,18 @@ class RegisterForm(UserCreationForm):
             raise forms.ValidationError("Este CPF/CNPJ já está em uso.")
 
         return cpf_cnpj
+
+    def clean(self):
+        cleaned_data = super().clean()
+        cpf_cnpj = cleaned_data.get('cpf_cnpj') or ''
+        numeros = re.sub(r'\D', '', cpf_cnpj)
+
+        if len(numeros) == 11 and not cleaned_data.get('last_name'):
+            self.add_error('last_name', 'Informe seu sobrenome.')
+        elif len(numeros) == 14:
+            cleaned_data['last_name'] = ''
+
+        return cleaned_data
 
 
 class EmailOrUsernameAuthenticationForm(forms.Form):

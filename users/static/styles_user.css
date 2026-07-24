@@ -685,6 +685,14 @@ body {
   color: var(--text-main, #111);
 }
 
+.field-row.has-single-field {
+  grid-template-columns: 1fr;
+}
+
+.field-group.is-hidden {
+  display: none;
+}
+
 @media (max-width: 480px) {
   .back-home-btn {
     top: 1rem;

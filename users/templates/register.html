@@ -21,7 +21,7 @@
   <div class="auth-center">
 
     <div class="auth-heading">
-      <div class="auth-eyebrow">E-Certidão</div>
+      <div class="auth-eyebrow">Certidãobr</div>
       <h1 class="auth-title">Área do cliente</h1>
     </div>
 
@@ -53,7 +53,7 @@
           {% csrf_token %}
           <div class="field-row">
             <div class="field-group {% if form.first_name.errors %}field--error{% endif %}">
-              <label class="field-label" for="{{ form.first_name.id_for_label }}">Nome</label>
+              <label class="field-label" for="{{ form.first_name.id_for_label }}" id="firstNameLabel">Nome</label>
               <div class="field-input-wrap">
                 <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -67,7 +67,7 @@
               {% if form.first_name.errors %}<p class="field-error-msg">{{ form.first_name.errors|join:", " }}</p>
               {%endif %}
             </div>
-            <div class="field-group {% if form.last_name.errors %}field--error{% endif %}">
+            <div class="field-group {% if form.last_name.errors %}field--error{% endif %}" id="lastNameField">
               <label class="field-label" for="{{ form.last_name.id_for_label }}">Sobrenome</label>
               <div class="field-input-wrap">
                 <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -126,7 +126,7 @@
                 </svg>
                 <input type="text" id="{{ form.cpf_cnpj.id_for_label }}" name="{{ form.cpf_cnpj.html_name }}"
                   value="{{ form.cpf_cnpj.value|default:'' }}" placeholder="000.000.000-00" class="field-input"
-                  inputmode="numeric">
+                  inputmode="numeric" autocomplete="off">
               </div>
               {% if form.cpf_cnpj.errors %}<p class="field-error-msg">{{ form.cpf_cnpj.errors|join:", " }}</p>
               {% endif %}
@@ -310,6 +310,33 @@
     const hide = el.type === 'text';
     el.type = hide ? 'password' : 'text';
     btn.style.color = hide ? '' : 'var(--ink)';
+  }
+
+  function updateCadastroPessoaTipo() {
+    const documentInput = document.getElementById('{{ form.cpf_cnpj.id_for_label }}');
+    const lastNameField = document.getElementById('lastNameField');
+    const lastNameInput = document.getElementById('{{ form.last_name.id_for_label }}');
+    const firstNameLabel = document.getElementById('firstNameLabel');
+
+    if (!documentInput || !lastNameField || !lastNameInput || !firstNameLabel) return;
+
+    const digits = documentInput.value.replace(/\D/g, '');
+    const isCnpj = digits.length > 11;
+    const nameRow = lastNameField.closest('.field-row');
+
+    lastNameField.classList.toggle('is-hidden', isCnpj);
+    lastNameInput.disabled = isCnpj;
+    lastNameInput.required = !isCnpj;
+    if (isCnpj) lastNameInput.value = '';
+    if (nameRow) nameRow.classList.toggle('has-single-field', isCnpj);
+
+    firstNameLabel.textContent = isCnpj ? 'Razão social' : 'Nome';
+  }
+
+  const cpfCnpjInput = document.getElementById('{{ form.cpf_cnpj.id_for_label }}');
+  if (cpfCnpjInput) {
+    cpfCnpjInput.addEventListener('input', updateCadastroPessoaTipo);
+    updateCadastroPessoaTipo();
   }
 
   switchTab('{{ active_tab|default:"register" }}');

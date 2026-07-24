@@ -1,7 +1,7 @@
 from django.db import connection
 from django.test import TestCase
 
-from .forms import EmailOrUsernameAuthenticationForm
+from .forms import EmailOrUsernameAuthenticationForm, RegisterForm
 from .models import User
 
 
@@ -52,3 +52,39 @@ class UserPrivacyTests(TestCase):
 
         self.assertTrue(form.is_valid(), form.errors)
         self.assertEqual(form.get_user().username, "maria")
+
+    def test_register_form_accepts_cnpj_without_last_name(self):
+        form = RegisterForm(
+            data={
+                "username": "empresa_certidao",
+                "first_name": "Empresa Certidao LTDA",
+                "last_name": "",
+                "email": "empresa@example.com",
+                "cpf_cnpj": "11.222.333/0001-81",
+                "telefone": "(11) 99999-9999",
+                "password1": "SenhaForte123!",
+                "password2": "SenhaForte123!",
+                "aceite_privacidade": "on",
+            }
+        )
+
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data["last_name"], "")
+
+    def test_register_form_requires_last_name_for_cpf(self):
+        form = RegisterForm(
+            data={
+                "username": "cliente_certidao",
+                "first_name": "Cliente",
+                "last_name": "",
+                "email": "cliente@example.com",
+                "cpf_cnpj": "529.982.247-25",
+                "telefone": "(11) 99999-9999",
+                "password1": "SenhaForte123!",
+                "password2": "SenhaForte123!",
+                "aceite_privacidade": "on",
+            }
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("last_name", form.errors)
