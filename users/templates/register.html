@@ -70,9 +70,12 @@
           </div>
           {% endwith %}
 
-          <div class="field-row">
+          {% with tipo_documento=form.tipo_documento.value|default:"cpf" %}
+          <div class="field-row {% if tipo_documento == 'cnpj' %}has-single-field{% endif %}">
             <div class="field-group {% if form.first_name.errors %}field--error{% endif %}">
-              <label class="field-label" for="{{ form.first_name.id_for_label }}" id="firstNameLabel">Nome</label>
+              <label class="field-label" for="{{ form.first_name.id_for_label }}" id="firstNameLabel">
+                {% if tipo_documento == 'cnpj' %}Razão social{% else %}Nome{% endif %}
+              </label>
               <div class="field-input-wrap">
                 <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -80,13 +83,16 @@
                   <circle cx="12" cy="7" r="4" />
                 </svg>
                 <input type="text" id="{{ form.first_name.id_for_label }}" name="{{ form.first_name.html_name }}"
-                  value="{{ form.first_name.value|default:'' }}" placeholder="Seu nome" autocomplete="given-name"
+                  value="{{ form.first_name.value|default:'' }}"
+                  placeholder="{% if tipo_documento == 'cnpj' %}Razão social da empresa{% else %}Seu nome{% endif %}"
+                  autocomplete="given-name"
                   class="field-input">
               </div>
               {% if form.first_name.errors %}<p class="field-error-msg">{{ form.first_name.errors|join:", " }}</p>
               {%endif %}
             </div>
-            <div class="field-group {% if form.last_name.errors %}field--error{% endif %}" id="lastNameField">
+            <div class="field-group {% if form.last_name.errors %}field--error{% endif %}{% if tipo_documento == 'cnpj' %} is-hidden{% endif %}"
+              id="lastNameField" {% if tipo_documento == 'cnpj' %}hidden aria-hidden="true" style="display:none;"{% endif %}>
               <label class="field-label" for="{{ form.last_name.id_for_label }}">Sobrenome</label>
               <div class="field-input-wrap">
                 <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -96,12 +102,13 @@
                 </svg>
                 <input type="text" id="{{ form.last_name.id_for_label }}" name="{{ form.last_name.html_name }}"
                   value="{{ form.last_name.value|default:'' }}" placeholder="Seu sobrenome" autocomplete="family-name"
-                  class="field-input">
+                  class="field-input" {% if tipo_documento == 'cnpj' %}disabled{% endif %}>
               </div>
               {% if form.last_name.errors %}<p class="field-error-msg">{{ form.last_name.errors|join:", " }}</p>
               {% endif %}
             </div>
           </div>
+          {% endwith %}
 
           <div class="field-group {% if form.username.errors %}field--error{% endif %}">
             <label class="field-label" for="{{ form.username.id_for_label }}">Nome de usuário</label>
@@ -381,6 +388,9 @@
     if (clearDocument) documentInput.value = '';
 
     lastNameField.classList.toggle('is-hidden', isCnpj);
+    lastNameField.hidden = isCnpj;
+    lastNameField.setAttribute('aria-hidden', String(isCnpj));
+    lastNameField.style.display = isCnpj ? 'none' : '';
     lastNameInput.disabled = isCnpj;
     lastNameInput.required = !isCnpj;
     if (isCnpj) lastNameInput.value = '';

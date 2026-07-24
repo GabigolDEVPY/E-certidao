@@ -84,6 +84,11 @@ class RegisterForm(UserCreationForm):
             "aceite_privacidade",
         )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        tipo_documento = self.data.get('tipo_documento') if self.is_bound else self.initial.get('tipo_documento', 'cpf')
+        self.fields['last_name'].required = tipo_documento != 'cnpj'
+
     def clean_email(self):
         email = normalize_email(self.cleaned_data.get('email'))
 

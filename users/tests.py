@@ -111,3 +111,24 @@ class UserPrivacyTests(TestCase):
 
         self.assertFalse(form.is_valid())
         self.assertIn("cpf_cnpj", form.errors)
+
+    def test_register_page_keeps_last_name_hidden_for_cnpj_after_error(self):
+        response = self.client.post(
+            "/users/register/",
+            data={
+                "username": "empresa_com_erro",
+                "tipo_documento": "cnpj",
+                "first_name": "Empresa Com Erro LTDA",
+                "last_name": "",
+                "email": "empresa-erro@example.com",
+                "cpf_cnpj": "11.222.333/0001-81",
+                "telefone": "(11) 99999-9999",
+                "password1": "SenhaForte123!",
+                "password2": "SenhaDiferente123!",
+                "aceite_privacidade": "on",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="lastNameField" hidden aria-hidden="true" style="display:none;"')
+        self.assertContains(response, "Razão social")
