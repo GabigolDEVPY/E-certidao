@@ -5,7 +5,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Certidãobr</title>
+  <meta name="theme-color" content="#0f1923">
+  <meta name="application-name" content="CertidaoBR">
+  <title>{% block title %}CertidaoBR{% endblock %}</title>
 
   <!-- Bootstrap 5 -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
@@ -16,10 +18,17 @@
     href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap"
     rel="stylesheet">
 
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
+
   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
   <link rel="stylesheet" href="{% static 'css/footer.css' %}">
-  <link rel="icon" href="{% static 'favicon.ico' %}" sizes="any">
-  <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
 </head>
 
 <body class="d-flex flex-column min-vh-100">
@@ -28,14 +37,14 @@
     {% block content %}{% endblock %}
   </main>
   {% include 'footer.html' %}
-  <div class="cookie-banner" id="cookieConsentBanner" hidden role="dialog" aria-live="polite" aria-label="Preferências de cookies">
+  <div class="cookie-banner" id="cookieConsentBanner" hidden role="dialog" aria-live="polite" aria-label="Preferencias de cookies">
     <div>
       <strong>Cookies do site</strong>
-      <p>Usamos cookies necessários para login, segurança e funcionamento. Cookies opcionais só serão usados se você aceitar.</p>
-      <a href="{% url 'privacy_policy' %}">Política de Privacidade</a>
+      <p>Usamos cookies necessarios para login, seguranca e funcionamento. Cookies opcionais so serao usados se voce aceitar.</p>
+      <a href="{% url 'privacy_policy' %}">Politica de Privacidade</a>
     </div>
     <div class="cookie-actions">
-      <button type="button" class="cookie-secondary" id="essentialCookies">Usar só necessários</button>
+      <button type="button" class="cookie-secondary" id="essentialCookies">Usar so necessarios</button>
       <button type="button" class="cookie-primary" id="acceptCookies">Aceitar cookies</button>
     </div>
   </div>

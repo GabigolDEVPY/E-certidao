@@ -23,6 +23,9 @@ db.sqlite3-journal
 staticfiles/
 static_root/
 media/
+.db.sqlite3
+/db.sqlite3
+db.sqlite3/
 
 # ── Distribuição / build ───────────────
 .Python
