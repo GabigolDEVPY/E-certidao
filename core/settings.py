@@ -48,6 +48,7 @@ def env_list(name, default=''):
 ALLOWED_HOSTS = env_list('DJANGO_ALLOWED_HOSTS', '*' if DEBUG else '')
 CSRF_TRUSTED_ORIGINS = env_list('DJANGO_CSRF_TRUSTED_ORIGINS')
 AUTH_USER_MODEL = "users.User"
+SITE_URL = os.environ.get('SITE_URL', 'https://certidaobr.com').rstrip('/')
 
 
 # Application definition
