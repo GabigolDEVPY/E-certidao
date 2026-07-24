@@ -1,5 +1,49 @@
 {% extends "base.html" %}
 
+{% block title %}CertidaoBR | Certidoes de imoveis online{% endblock %}
+{% block meta_description %}Solicite certidao de imovel online com atendimento digital, acompanhamento do pedido e suporte para documentos registrais em todo o Brasil.{% endblock %}
+{% block og_title %}CertidaoBR | Certidoes de imoveis online{% endblock %}
+{% block og_description %}Solicite certidao de imovel online com atendimento digital, acompanhamento do pedido e suporte para documentos registrais em todo o Brasil.{% endblock %}
+{% block twitter_title %}CertidaoBR | Certidoes de imoveis online{% endblock %}
+{% block twitter_description %}Solicite certidao de imovel online com atendimento digital, acompanhamento do pedido e suporte para documentos registrais em todo o Brasil.{% endblock %}
+{% block structured_data %}
+{{ block.super }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Service",
+      "@id": "{{ site_url }}/#certidao-imovel",
+      "name": "Solicitacao de certidao de imovel online",
+      "description": "Atendimento digital para solicitacao e acompanhamento de certidoes de imoveis e documentos registrais.",
+      "provider": {
+        "@id": "{{ site_url }}/#organization"
+      },
+      "areaServed": {
+        "@type": "Country",
+        "name": "Brasil"
+      },
+      "serviceType": "Certidoes e documentos registrais",
+      "url": "{{ site_url }}/"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "{{ site_url }}/#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Inicio",
+          "item": "{{ site_url }}/"
+        }
+      ]
+    }
+  ]
+}
+</script>
+{% endblock %}
+
 {% block content %}
 
 <!-- ═══ NAV CATEGORIAS ═══ -->
@@ -47,6 +91,15 @@
       <span class="content-count" id="contentCount"></span>
     </div>
     <div class="service-list" id="serviceList"></div>
+
+    <section class="seo-summary" aria-labelledby="seo-summary-title">
+      <h2 id="seo-summary-title">Solicitacao de certidoes com atendimento digital</h2>
+      <p>
+        A CertidaoBR facilita a solicitacao de certidoes e documentos registrais, com fluxo online,
+        atendimento em portugues e acompanhamento do pedido. O objetivo e tornar a busca por documentos
+        mais simples, mantendo orientacao clara para cada etapa.
+      </p>
+    </section>
 
   </div>
 </main>

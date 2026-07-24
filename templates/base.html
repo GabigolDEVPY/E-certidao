@@ -6,10 +6,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#0f1923">
-  <meta name="application-name" content="CertidaoBR">
-  <meta name="description" content="{% block meta_description %}Solicite certidoes online com atendimento seguro, simples e acompanhamento do pedido.{% endblock %}">
-  <link rel="canonical" href="https://certidaobr.com{{ request.path }}">
-  <title>{% block title %}CertidaoBR{% endblock %}</title>
+  <meta name="application-name" content="{{ site_name }}">
+  <meta name="robots" content="{% block robots %}index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1{% endblock %}">
+  <meta name="description" content="{% block meta_description %}Solicite certidoes online com atendimento seguro, simples e acompanhamento do pedido em todo o Brasil.{% endblock %}">
+  <link rel="canonical" href="{{ site_url }}{{ request.path }}">
+  <title>{% block title %}{{ site_name }} | Certidoes online{% endblock %}</title>
+
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+  <meta property="og:site_name" content="{{ site_name }}">
+  <meta property="og:title" content="{% block og_title %}{{ site_name }} | Certidoes online{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}Solicite certidoes online com atendimento seguro, simples e acompanhamento do pedido em todo o Brasil.{% endblock %}">
+  <meta property="og:url" content="{{ site_url }}{{ request.path }}">
+  <meta property="og:image" content="{{ site_url }}/android-chrome-512x512.png">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="{% block twitter_title %}{{ site_name }} | Certidoes online{% endblock %}">
+  <meta name="twitter:description" content="{% block twitter_description %}Solicite certidoes online com atendimento seguro, simples e acompanhamento do pedido em todo o Brasil.{% endblock %}">
+  <meta name="twitter:image" content="{{ site_url }}/android-chrome-512x512.png">
 
   <!-- Bootstrap 5 -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
@@ -32,6 +45,39 @@
 
   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
   <link rel="stylesheet" href="{% static 'css/footer.css' %}">
+  {% block structured_data %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "{{ site_url }}/#organization",
+        "name": "{{ site_name }}",
+        "url": "{{ site_url }}/",
+        "logo": "{{ site_url }}/android-chrome-512x512.png",
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "contactType": "customer support",
+          "email": "suporte@certidao.com",
+          "areaServed": "BR",
+          "availableLanguage": "pt-BR"
+        }
+      },
+      {
+        "@type": "WebSite",
+        "@id": "{{ site_url }}/#website",
+        "name": "{{ site_name }}",
+        "url": "{{ site_url }}/",
+        "publisher": {
+          "@id": "{{ site_url }}/#organization"
+        },
+        "inLanguage": "pt-BR"
+      }
+    ]
+  }
+  </script>
+  {% endblock %}
 </head>
 
 <body class="d-flex flex-column min-vh-100">

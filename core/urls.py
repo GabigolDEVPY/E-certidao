@@ -72,6 +72,10 @@ def robots_txt(request):
     return HttpResponse(
         'User-agent: *\n'
         'Allow: /\n'
+        'Disallow: /admin/\n'
+        'Disallow: /webhooks/\n'
+        'Disallow: /billing/webhook/\n'
+        'Disallow: /certidao/api/\n'
         f'Sitemap: {settings.SITE_URL}/sitemap.xml\n',
         content_type='text/plain; charset=utf-8',
     )

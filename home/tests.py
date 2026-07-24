@@ -30,3 +30,26 @@ class ContactViewTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(ContactMessage.objects.count(), 0)
+
+
+class SeoMetadataTests(TestCase):
+    def test_home_has_search_metadata(self):
+        response = self.client.get(reverse('home'))
+
+        self.assertContains(response, 'rel="canonical" href="https://certidaobr.com/"')
+        self.assertContains(response, 'name="description"')
+        self.assertContains(response, 'application/ld+json')
+        self.assertContains(response, 'favicon-48x48.png')
+
+    def test_robots_txt_points_to_sitemap_and_blocks_technical_paths(self):
+        response = self.client.get(reverse('robots_txt'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Sitemap: https://certidaobr.com/sitemap.xml')
+        self.assertContains(response, 'Disallow: /admin/')
+        self.assertContains(response, 'Disallow: /certidao/api/')
+
+    def test_client_area_is_noindex(self):
+        response = self.client.get(reverse('register'))
+
+        self.assertContains(response, 'name="robots" content="noindex,nofollow"')
