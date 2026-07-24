@@ -607,6 +607,49 @@ body {
   line-height: 1.4;
 }
 
+.document-type-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--rule);
+  background: var(--white);
+}
+
+.document-type-option {
+  margin: 0;
+  cursor: pointer;
+}
+
+.document-type-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.document-type-option span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  color: var(--ink-light);
+  transition: background .15s, color .15s;
+}
+
+.document-type-option + .document-type-option span {
+  border-left: 1px solid var(--rule);
+}
+
+.document-type-option input:checked + span {
+  background: var(--ink);
+  color: #fff;
+}
+
+.document-type-option input:focus-visible + span {
+  box-shadow: 0 0 0 2px rgba(15, 25, 35, .12) inset;
+}
+
 .forgot-wrap {
   display: flex;
   justify-content: flex-end;

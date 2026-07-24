@@ -51,6 +51,25 @@
 
         <form method="POST" action="{% url 'register' %}" class="reg-form" novalidate>
           {% csrf_token %}
+          {% with tipo_documento=form.tipo_documento.value|default:"cpf" %}
+          <div class="field-group {% if form.tipo_documento.errors %}field--error{% endif %}">
+            <span class="field-label">Tipo de cadastro</span>
+            <div class="document-type-options" role="radiogroup" aria-label="Tipo de cadastro">
+              <label class="document-type-option">
+                <input type="radio" name="{{ form.tipo_documento.html_name }}" value="cpf"
+                  {% if tipo_documento == "cpf" %}checked{% endif %}>
+                <span>CPF</span>
+              </label>
+              <label class="document-type-option">
+                <input type="radio" name="{{ form.tipo_documento.html_name }}" value="cnpj"
+                  {% if tipo_documento == "cnpj" %}checked{% endif %}>
+                <span>CNPJ</span>
+              </label>
+            </div>
+            {% if form.tipo_documento.errors %}<p class="field-error-msg">{{ form.tipo_documento.errors|join:", " }}</p>{% endif %}
+          </div>
+          {% endwith %}
+
           <div class="field-row">
             <div class="field-group {% if form.first_name.errors %}field--error{% endif %}">
               <label class="field-label" for="{{ form.first_name.id_for_label }}" id="firstNameLabel">Nome</label>
@@ -116,7 +135,7 @@
 
           <div class="field-row">
             <div class="field-group {% if form.cpf_cnpj.errors %}field--error{% endif %}">
-              <label class="field-label" for="{{ form.cpf_cnpj.id_for_label }}">CPF / CNPJ</label>
+              <label class="field-label" for="{{ form.cpf_cnpj.id_for_label }}" id="documentLabel">CPF</label>
               <div class="field-input-wrap">
                 <svg class="field-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -312,17 +331,54 @@
     btn.style.color = hide ? '' : 'var(--ink)';
   }
 
-  function updateCadastroPessoaTipo() {
+  function onlyDigits(value) {
+    return value.replace(/\D/g, '');
+  }
+
+  function maskCpf(value) {
+    const digits = onlyDigits(value).slice(0, 11);
+    return digits
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+  }
+
+  function maskCnpj(value) {
+    const digits = onlyDigits(value).slice(0, 14);
+    return digits
+      .replace(/^(\d{2})(\d)/, '$1.$2')
+      .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+      .replace(/\.(\d{3})(\d)/, '.$1/$2')
+      .replace(/(\d{4})(\d{1,2})$/, '$1-$2');
+  }
+
+  function getSelectedDocumentType() {
+    const selected = document.querySelector('input[name="{{ form.tipo_documento.html_name }}"]:checked');
+    return selected ? selected.value : 'cpf';
+  }
+
+  function applyDocumentMask() {
+    const documentInput = document.getElementById('{{ form.cpf_cnpj.id_for_label }}');
+    if (!documentInput) return;
+
+    documentInput.value = getSelectedDocumentType() === 'cnpj'
+      ? maskCnpj(documentInput.value)
+      : maskCpf(documentInput.value);
+  }
+
+  function updateCadastroPessoaTipo(clearDocument) {
     const documentInput = document.getElementById('{{ form.cpf_cnpj.id_for_label }}');
     const lastNameField = document.getElementById('lastNameField');
     const lastNameInput = document.getElementById('{{ form.last_name.id_for_label }}');
     const firstNameLabel = document.getElementById('firstNameLabel');
+    const documentLabel = document.getElementById('documentLabel');
 
-    if (!documentInput || !lastNameField || !lastNameInput || !firstNameLabel) return;
+    if (!documentInput || !lastNameField || !lastNameInput || !firstNameLabel || !documentLabel) return;
 
-    const digits = documentInput.value.replace(/\D/g, '');
-    const isCnpj = digits.length > 11;
+    const isCnpj = getSelectedDocumentType() === 'cnpj';
     const nameRow = lastNameField.closest('.field-row');
+
+    if (clearDocument) documentInput.value = '';
 
     lastNameField.classList.toggle('is-hidden', isCnpj);
     lastNameInput.disabled = isCnpj;
@@ -331,13 +387,20 @@
     if (nameRow) nameRow.classList.toggle('has-single-field', isCnpj);
 
     firstNameLabel.textContent = isCnpj ? 'Razão social' : 'Nome';
+    documentLabel.textContent = isCnpj ? 'CNPJ' : 'CPF';
+    documentInput.placeholder = isCnpj ? '00.000.000/0000-00' : '000.000.000-00';
+    documentInput.maxLength = isCnpj ? 18 : 14;
+    applyDocumentMask();
   }
 
   const cpfCnpjInput = document.getElementById('{{ form.cpf_cnpj.id_for_label }}');
   if (cpfCnpjInput) {
-    cpfCnpjInput.addEventListener('input', updateCadastroPessoaTipo);
+    cpfCnpjInput.addEventListener('input', applyDocumentMask);
     updateCadastroPessoaTipo();
   }
+  document.querySelectorAll('input[name="{{ form.tipo_documento.html_name }}"]').forEach((input) => {
+    input.addEventListener('change', () => updateCadastroPessoaTipo(true));
+  });
 
   switchTab('{{ active_tab|default:"register" }}');
 </script>

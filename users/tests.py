@@ -57,6 +57,7 @@ class UserPrivacyTests(TestCase):
         form = RegisterForm(
             data={
                 "username": "empresa_certidao",
+                "tipo_documento": "cnpj",
                 "first_name": "Empresa Certidao LTDA",
                 "last_name": "",
                 "email": "empresa@example.com",
@@ -70,11 +71,14 @@ class UserPrivacyTests(TestCase):
 
         self.assertTrue(form.is_valid(), form.errors)
         self.assertEqual(form.cleaned_data["last_name"], "")
+        user = form.save()
+        self.assertEqual(user.last_name, "")
 
     def test_register_form_requires_last_name_for_cpf(self):
         form = RegisterForm(
             data={
                 "username": "cliente_certidao",
+                "tipo_documento": "cpf",
                 "first_name": "Cliente",
                 "last_name": "",
                 "email": "cliente@example.com",
@@ -88,3 +92,22 @@ class UserPrivacyTests(TestCase):
 
         self.assertFalse(form.is_valid())
         self.assertIn("last_name", form.errors)
+
+    def test_register_form_rejects_cpf_when_cnpj_was_selected(self):
+        form = RegisterForm(
+            data={
+                "username": "documento_errado",
+                "tipo_documento": "cnpj",
+                "first_name": "Documento Errado LTDA",
+                "last_name": "",
+                "email": "documento@example.com",
+                "cpf_cnpj": "529.982.247-25",
+                "telefone": "(11) 99999-9999",
+                "password1": "SenhaForte123!",
+                "password2": "SenhaForte123!",
+                "aceite_privacidade": "on",
+            }
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("cpf_cnpj", form.errors)

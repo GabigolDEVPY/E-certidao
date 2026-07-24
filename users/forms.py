@@ -50,6 +50,17 @@ def validar_cnpj(cnpj):
 
 
 class RegisterForm(UserCreationForm):
+    DOCUMENT_TYPE_CHOICES = (
+        ('cpf', 'CPF'),
+        ('cnpj', 'CNPJ'),
+    )
+
+    tipo_documento = forms.ChoiceField(
+        choices=DOCUMENT_TYPE_CHOICES,
+        required=True,
+        initial='cpf',
+        label="Tipo de cadastro",
+    )
     first_name = forms.CharField(max_length=50, required=True, label="Nome")
     last_name  = forms.CharField(max_length=50, required=False, label="Sobrenome")
     aceite_privacidade = forms.BooleanField(
@@ -61,6 +72,7 @@ class RegisterForm(UserCreationForm):
     class Meta:
         model = User
         fields = (
+            "tipo_documento",
             "username",
             "first_name",
             "last_name",
@@ -114,12 +126,18 @@ class RegisterForm(UserCreationForm):
 
     def clean(self):
         cleaned_data = super().clean()
+        tipo_documento = cleaned_data.get('tipo_documento')
         cpf_cnpj = cleaned_data.get('cpf_cnpj') or ''
         numeros = re.sub(r'\D', '', cpf_cnpj)
 
-        if len(numeros) == 11 and not cleaned_data.get('last_name'):
+        if tipo_documento == 'cpf' and len(numeros) != 11:
+            self.add_error('cpf_cnpj', 'Informe um CPF válido.')
+        elif tipo_documento == 'cnpj' and len(numeros) != 14:
+            self.add_error('cpf_cnpj', 'Informe um CNPJ válido.')
+
+        if tipo_documento == 'cpf' and not cleaned_data.get('last_name'):
             self.add_error('last_name', 'Informe seu sobrenome.')
-        elif len(numeros) == 14:
+        elif tipo_documento == 'cnpj':
             cleaned_data['last_name'] = ''
 
         return cleaned_data
