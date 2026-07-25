@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} | Certidãobr{% endblock %}
+{% block meta_description %}{{ post.meta_description|default:post.excerpt }}{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block og_title %}{{ post.title }} | Certidãobr{% endblock %}
+{% block og_description %}{{ post.meta_description|default:post.excerpt }}{% endblock %}
+{% block twitter_title %}{{ post.title }} | Certidãobr{% endblock %}
+{% block twitter_description %}{{ post.meta_description|default:post.excerpt }}{% endblock %}
+{% block structured_data %}
+{{ block.super }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "{{ post.title|escapejs }}",
+  "description": "{{ post.meta_description|default:post.excerpt|escapejs }}",
+  "datePublished": "{{ post.published_at|date:'c' }}",
+  "dateModified": "{{ post.updated_at|date:'c' }}",
+  "author": {
+    "@type": "Organization",
+    "name": "{{ site_name|escapejs }}"
+  },
+  "publisher": {
+    "@id": "{{ site_url }}/#organization"
+  },
+  "mainEntityOfPage": "{{ site_url }}{{ request.path }}"
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<main class="main-area">
+  <div class="container-xl main-content article-page">
+    <nav class="breadcrumb-lite" aria-label="Breadcrumb">
+      <a href="{% url 'home' %}">Início</a>
+      <span>/</span>
+      <a href="{% url 'blog_list' %}">Blog</a>
+    </nav>
+
+    <article class="article-body">
+      <p class="article-kicker">{{ post.get_certidao_type_display|default:"Certidão de imóvel" }}</p>
+      <h1>{{ post.title }}</h1>
+      <p class="article-excerpt">{{ post.excerpt }}</p>
+      <div class="article-content">
+        {{ post.content|linebreaks }}
+      </div>
+    </article>
+
+    {% if related_faqs %}
+    <section class="related-section">
+      <h2>Perguntas relacionadas</h2>
+      {% for faq in related_faqs %}
+      <details class="faq-item" id="faq-{{ faq.id }}">
+        <summary>{{ faq.question }}</summary>
+        <div>{{ faq.answer|linebreaks }}</div>
+      </details>
+      {% endfor %}
+    </section>
+    {% endif %}
+
+    {% if related_posts %}
+    <section class="related-section">
+      <h2>Leia também</h2>
+      <div class="article-list compact">
+        {% for related in related_posts %}
+        <a href="{% url 'blog_detail' related.slug %}" class="knowledge-link">
+          <strong>{{ related.title }}</strong>
+          <span>{{ related.excerpt }}</span>
+        </a>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+  </div>
+</main>
+{% endblock %}

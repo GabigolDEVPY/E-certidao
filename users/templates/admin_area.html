@@ -3,7 +3,7 @@
 
 {% block title %}Painel Administrativo{% endblock %}
 {% block robots %}noindex,nofollow{% endblock %}
-{% block meta_description %}Painel administrativo privado da CertidaoBR.{% endblock %}
+{% block meta_description %}Painel administrativo privado da Certidãobr.{% endblock %}
 
 {% block content %}
 <div class="form-wrapper" style="padding-top: 2rem; max-width: 1100px;">
@@ -12,6 +12,13 @@
   <div class="content-header">
     <h1>Painel Administrativo</h1>
     <span class="content-count">{{ contadores.total }} pedido{{ contadores.total|pluralize:"s" }}</span>
+  </div>
+
+  <div class="admin-content-shortcuts">
+    <a href="{% url 'admin:home_blogpost_changelist' %}" class="admin-btn-detail">Editar blog</a>
+    <a href="{% url 'admin:home_faqitem_changelist' %}" class="admin-btn-detail">Editar FAQ</a>
+    <a href="{% url 'blog_list' %}" class="admin-btn-detail">Ver blog público</a>
+    <a href="{% url 'faq' %}" class="admin-btn-detail">Ver FAQ público</a>
   </div>
 
   <!-- Contadores rápidos -->

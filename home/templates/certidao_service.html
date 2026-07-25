@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}{{ service.title }} online | Certidãobr{% endblock %}
+{% block meta_description %}Solicite {{ service.title|lower }} online com atendimento digital, orientação de dados, acompanhamento do pedido e suporte em todo o Brasil.{% endblock %}
+{% block og_title %}{{ service.title }} online | Certidãobr{% endblock %}
+{% block og_description %}Entenda quando usar {{ service.title|lower }} e inicie seu pedido online com a Certidãobr.{% endblock %}
+{% block twitter_title %}{{ service.title }} online | Certidãobr{% endblock %}
+{% block twitter_description %}Entenda quando usar {{ service.title|lower }} e inicie seu pedido online com a Certidãobr.{% endblock %}
+{% block structured_data %}
+{{ block.super }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "{{ service.title|escapejs }}",
+  "description": "{{ service.description|escapejs }}",
+  "provider": {
+    "@id": "{{ site_url }}/#organization"
+  },
+  "areaServed": {
+    "@type": "Country",
+    "name": "Brasil"
+  },
+  "serviceType": "Certidão de imóvel",
+  "url": "{{ site_url }}{{ request.path }}"
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<main class="main-area">
+  <div class="container-xl main-content service-page">
+    <nav class="breadcrumb-lite" aria-label="Breadcrumb">
+      <a href="{% url 'home' %}">Início</a>
+      <span>/</span>
+      <span>{{ service.short_title }}</span>
+    </nav>
+
+    <section class="service-hero-lite">
+      <p class="article-kicker">Certidão de imóvel online</p>
+      <h1>{{ service.title }}</h1>
+      <p>{{ service.description }}</p>
+      <div class="service-actions">
+        <a href="{% url 'certidao:imovel' %}?tipo={{ service.tipo }}" class="submit-btn register-btn">Solicitar agora</a>
+        <a href="{% url 'faq' %}?tipo={{ service.tipo }}" class="text-link">Ver perguntas frequentes</a>
+      </div>
+    </section>
+
+    <div class="service-tabs">
+      {% for item in service_pages %}
+      <a href="{% url 'certidao_service' item.slug %}" class="{% if item.slug == service.slug %}is-active{% endif %}">{{ item.short_title }}</a>
+      {% endfor %}
+    </div>
+
+    <section class="service-detail-grid">
+      <div class="service-detail-main">
+        <h2>Quando este pedido costuma ser usado</h2>
+        {% for detail in service.details %}
+        <p>{{ detail }}</p>
+        {% endfor %}
+      </div>
+      <aside class="service-detail-side">
+        <h2>Assuntos relacionados</h2>
+        <div class="related-searches compact">
+          <span>certidão de imóvel online</span>
+          <span>certidão atualizada</span>
+          <span>matrícula do imóvel</span>
+          <span>ônus reais</span>
+          <span>inteiro teor</span>
+        </div>
+        <p class="microcopy">{{ service.keywords }}</p>
+      </aside>
+    </section>
+
+    {% if faqs %}
+    <section class="related-section">
+      <h2>Dúvidas comuns sobre este pedido</h2>
+      {% for faq in faqs %}
+      <details class="faq-item" id="faq-{{ faq.id }}">
+        <summary>{{ faq.question }}</summary>
+        <div>{{ faq.answer|linebreaks }}</div>
+      </details>
+      {% endfor %}
+    </section>
+    {% endif %}
+
+    {% if posts %}
+    <section class="related-section">
+      <h2>Conteúdos relacionados</h2>
+      <div class="article-list compact">
+        {% for post in posts %}
+        <a href="{% url 'blog_detail' post.slug %}" class="knowledge-link">
+          <strong>{{ post.title }}</strong>
+          <span>{{ post.excerpt }}</span>
+        </a>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+  </div>
+</main>
+{% endblock %}

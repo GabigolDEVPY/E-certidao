@@ -15,7 +15,11 @@ let currentTab = 'todos';
 
 const tabLabels = {
   todos: 'Todos os Serviços',
-  imoveis: 'Imóveis',
+  'inteiro-teor': 'Inteiro teor',
+  'inteiro-teor-livro-03': 'Livro 03',
+  'onus-reais': 'Busca CPF/CNPJ',
+  vintenaria: 'Filiação de domínio',
+  atualizada: 'Completa atualizada',
 };
 
 // ─── RENDER ───
@@ -47,7 +51,10 @@ function renderServices(tab, query = '') {
       <div class="service-icon">
         <svg width="20" height="20"><use href="#${s.iconId}"/></svg>
       </div>
-      <span class="service-title">${s.title}</span>
+      <span class="service-copy">
+        <span class="service-title">${s.title}</span>
+        <span class="service-desc">${s.desc}</span>
+      </span>
       <span class="service-arrow">→</span>
     `;
 

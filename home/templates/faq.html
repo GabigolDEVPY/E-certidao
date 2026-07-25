@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}FAQ sobre certidão de imóvel | Certidãobr{% endblock %}
+{% block meta_description %}Perguntas frequentes sobre certidão de imóvel online, matrícula atualizada, ônus reais, inteiro teor, prazos, pedidos e acompanhamento.{% endblock %}
+{% block og_title %}FAQ sobre certidão de imóvel | Certidãobr{% endblock %}
+{% block og_description %}Tire dúvidas comuns sobre pedidos de certidão de imóvel e escolha o tipo de documento ideal.{% endblock %}
+{% block twitter_title %}FAQ sobre certidão de imóvel | Certidãobr{% endblock %}
+{% block twitter_description %}Tire dúvidas comuns sobre pedidos de certidão de imóvel e escolha o tipo de documento ideal.{% endblock %}
+{% block structured_data %}
+{{ block.super }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {% for faq in faqs %}
+    {
+      "@type": "Question",
+      "name": "{{ faq.question|escapejs }}",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "{{ faq.answer|striptags|escapejs }}"
+      }
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<main class="main-area">
+  <div class="container-xl main-content faq-page">
+    <div class="content-header">
+      <h1>Perguntas Frequentes</h1>
+      <span class="content-count">{{ faqs|length }} pergunta{{ faqs|length|pluralize:"s" }}</span>
+    </div>
+
+    <form method="get" class="knowledge-search">
+      {% if selected_tipo %}<input type="hidden" name="tipo" value="{{ selected_tipo }}">{% endif %}
+      <input type="search" name="q" value="{{ query }}" placeholder="Pesquisar dúvida sobre certidão de imóvel" aria-label="Pesquisar no FAQ">
+      <button type="submit">Pesquisar</button>
+    </form>
+
+    <div class="service-tabs">
+      <a href="{% url 'faq' %}" class="{% if not selected_tipo %}is-active{% endif %}">Todos</a>
+      {% for service in service_pages %}
+      <a href="{% url 'faq' %}?tipo={{ service.tipo }}" class="{% if selected_tipo == service.tipo %}is-active{% endif %}">{{ service.short_title }}</a>
+      {% endfor %}
+    </div>
+
+    <section class="faq-list">
+      {% for faq in faqs %}
+      <details class="faq-item" id="faq-{{ faq.id }}">
+        <summary>{{ faq.question }}</summary>
+        <div>{{ faq.answer|linebreaks }}</div>
+      </details>
+      {% empty %}
+      <div class="attention-box">Nenhuma pergunta encontrada.</div>
+      {% endfor %}
+    </section>
+  </div>
+</main>
+{% endblock %}

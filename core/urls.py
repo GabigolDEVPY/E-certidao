@@ -45,15 +45,38 @@ def _absolute_url(path):
 
 
 def sitemap_xml(request):
+    from home.models import BlogPost
+    from home.seo_content import CERTIDAO_SERVICE_PAGES
+
     public_urls = [
         {'path': reverse('home'), 'priority': '1.0', 'changefreq': 'weekly'},
+        {'path': reverse('blog_list'), 'priority': '0.8', 'changefreq': 'weekly'},
+        {'path': reverse('faq'), 'priority': '0.8', 'changefreq': 'weekly'},
         {'path': reverse('contact'), 'priority': '0.6', 'changefreq': 'monthly'},
         {'path': reverse('privacy_policy'), 'priority': '0.3', 'changefreq': 'yearly'},
         {'path': reverse('terms_of_use'), 'priority': '0.3', 'changefreq': 'yearly'},
     ]
+    public_urls.extend(
+        {
+            'path': reverse('certidao_service', kwargs={'slug': service['slug']}),
+            'priority': '0.9',
+            'changefreq': 'weekly',
+        }
+        for service in CERTIDAO_SERVICE_PAGES
+    )
+    public_urls.extend(
+        {
+            'path': reverse('blog_detail', kwargs={'slug': post.slug}),
+            'priority': '0.7',
+            'changefreq': 'monthly',
+            'lastmod': post.updated_at.date().isoformat(),
+        }
+        for post in BlogPost.objects.filter(is_published=True).only('slug', 'updated_at')
+    )
     entries = '\n'.join(
         '  <url>\n'
         f'    <loc>{_absolute_url(item["path"])}</loc>\n'
+        f'    {"<lastmod>" + item["lastmod"] + "</lastmod>" if item.get("lastmod") else ""}\n'
         f'    <changefreq>{item["changefreq"]}</changefreq>\n'
         f'    <priority>{item["priority"]}</priority>\n'
         '  </url>'

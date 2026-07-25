@@ -8,20 +8,21 @@
   <meta name="theme-color" content="#0f1923">
   <meta name="application-name" content="{{ site_name }}">
   <meta name="robots" content="{% block robots %}index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1{% endblock %}">
-  <meta name="description" content="{% block meta_description %}Solicite certidoes online com atendimento seguro, simples e acompanhamento do pedido em todo o Brasil.{% endblock %}">
+  <meta name="description" content="{% block meta_description %}Solicite certidões online com atendimento seguro, simples e acompanhamento do pedido em todo o Brasil.{% endblock %}">
+  <meta name="keywords" content="{% block meta_keywords %}{% if keyword_cluster %}{{ keyword_cluster|join:', ' }}{% endif %}{% endblock %}">
   <link rel="canonical" href="{{ site_url }}{{ request.path }}">
-  <title>{% block title %}{{ site_name }} | Certidoes online{% endblock %}</title>
+  <title>{% block title %}{{ site_name }} | Certidões online{% endblock %}</title>
 
   <meta property="og:locale" content="pt_BR">
   <meta property="og:type" content="{% block og_type %}website{% endblock %}">
   <meta property="og:site_name" content="{{ site_name }}">
-  <meta property="og:title" content="{% block og_title %}{{ site_name }} | Certidoes online{% endblock %}">
-  <meta property="og:description" content="{% block og_description %}Solicite certidoes online com atendimento seguro, simples e acompanhamento do pedido em todo o Brasil.{% endblock %}">
+  <meta property="og:title" content="{% block og_title %}{{ site_name }} | Certidões online{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}Solicite certidões online com atendimento seguro, simples e acompanhamento do pedido em todo o Brasil.{% endblock %}">
   <meta property="og:url" content="{{ site_url }}{{ request.path }}">
   <meta property="og:image" content="{{ site_url }}/android-chrome-512x512.png">
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="{% block twitter_title %}{{ site_name }} | Certidoes online{% endblock %}">
-  <meta name="twitter:description" content="{% block twitter_description %}Solicite certidoes online com atendimento seguro, simples e acompanhamento do pedido em todo o Brasil.{% endblock %}">
+  <meta name="twitter:title" content="{% block twitter_title %}{{ site_name }} | Certidões online{% endblock %}">
+  <meta name="twitter:description" content="{% block twitter_description %}Solicite certidões online com atendimento seguro, simples e acompanhamento do pedido em todo o Brasil.{% endblock %}">
   <meta name="twitter:image" content="{{ site_url }}/android-chrome-512x512.png">
 
   <!-- Bootstrap 5 -->
@@ -43,8 +44,8 @@
   <link rel="manifest" href="/site.webmanifest">
   <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
 
-  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-  <link rel="stylesheet" href="{% static 'css/footer.css' %}">
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}?v=20260725-seo4">
+  <link rel="stylesheet" href="{% static 'css/footer.css' %}?v=20260725-seo4">
   {% block structured_data %}
   <script type="application/ld+json">
   {
@@ -81,6 +82,11 @@
 </head>
 
 <body class="d-flex flex-column min-vh-100">
+  {% if keyword_cluster %}
+  <div class="visually-hidden" aria-hidden="true">
+    {% for keyword in keyword_cluster %}{{ keyword }}{% if not forloop.last %}, {% endif %}{% endfor %}
+  </div>
+  {% endif %}
   {% include 'navbar.html' %}
   <main class="flex-grow-1">
     {% block content %}{% endblock %}
@@ -90,7 +96,7 @@
     <div>
       <strong>Cookies do site</strong>
       <p>Usamos cookies necessarios para login, seguranca e funcionamento. Cookies opcionais so serao usados se voce aceitar.</p>
-      <a href="{% url 'privacy_policy' %}">Politica de Privacidade</a>
+      <a href="{% url 'privacy_policy' %}">Política de Privacidade</a>
     </div>
     <div class="cookie-actions">
       <button type="button" class="cookie-secondary" id="essentialCookies">Usar so necessarios</button>
@@ -99,7 +105,7 @@
   </div>
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="{% static 'js/script.js' %}"></script>
+  <script src="{% static 'js/script.js' %}?v=20260725-seo4"></script>
   {% block scripts %}{% endblock %}
 </body>
 

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Blog sobre certidão de imóvel | Certidãobr{% endblock %}
+{% block meta_description %}Artigos sobre certidão de imóvel, matrícula atualizada, ônus reais, inteiro teor, busca por CPF/CNPJ e pedidos online.{% endblock %}
+{% block og_title %}Blog sobre certidão de imóvel | Certidãobr{% endblock %}
+{% block og_description %}Conteúdos para entender, solicitar e acompanhar pedidos de certidão de imóvel online.{% endblock %}
+{% block twitter_title %}Blog sobre certidão de imóvel | Certidãobr{% endblock %}
+{% block twitter_description %}Conteúdos para entender, solicitar e acompanhar pedidos de certidão de imóvel online.{% endblock %}
+
+{% block content %}
+<main class="main-area">
+  <div class="container-xl main-content">
+    <div class="content-header">
+      <h1>Blog</h1>
+      <span class="content-count">{{ posts|length }} artigo{{ posts|length|pluralize:"s" }}</span>
+    </div>
+
+    <form method="get" class="knowledge-search">
+      <input type="search" name="q" value="{{ query }}" placeholder="Pesquisar por certidão, matrícula, ônus..." aria-label="Pesquisar no blog">
+      <button type="submit">Pesquisar</button>
+    </form>
+
+    <div class="service-tabs">
+      <a href="{% url 'blog_list' %}" class="is-active">Todos</a>
+      {% for service in service_pages %}
+      <a href="{% url 'certidao_service' service.slug %}">{{ service.short_title }}</a>
+      {% endfor %}
+    </div>
+
+    <div class="article-list">
+      {% for post in posts %}
+      <article class="article-card">
+        <p class="article-kicker">{{ post.get_certidao_type_display|default:"Certidão de imóvel" }}</p>
+        <h2><a href="{% url 'blog_detail' post.slug %}">{{ post.title }}</a></h2>
+        <p>{{ post.excerpt }}</p>
+        <a href="{% url 'blog_detail' post.slug %}" class="text-link">Ler artigo</a>
+      </article>
+      {% empty %}
+      <div class="attention-box">Nenhum artigo encontrado.</div>
+      {% endfor %}
+    </div>
+  </div>
+</main>
+{% endblock %}

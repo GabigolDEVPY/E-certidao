@@ -47,7 +47,11 @@ class ImovelView(LoginRequiredMixin, View):
     login_url = 'login'
 
     def get(self, request):
-        form = OrderImovelForm()
+        tipo = request.GET.get('tipo', '').strip()
+        initial = {}
+        if tipo in dict(OrderImovel.TIPOS_CERTIDAO):
+            initial['tipo_certidao'] = tipo
+        form = OrderImovelForm(initial=initial)
         return render(request, self.template_name, self._context(form))
 
     def post(self, request):

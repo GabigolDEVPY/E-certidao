@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}CertidaoBR | Certidoes de imoveis online{% endblock %}
-{% block meta_description %}Solicite certidao de imovel online com atendimento digital, acompanhamento do pedido e suporte para documentos registrais em todo o Brasil.{% endblock %}
-{% block og_title %}CertidaoBR | Certidoes de imoveis online{% endblock %}
-{% block og_description %}Solicite certidao de imovel online com atendimento digital, acompanhamento do pedido e suporte para documentos registrais em todo o Brasil.{% endblock %}
-{% block twitter_title %}CertidaoBR | Certidoes de imoveis online{% endblock %}
-{% block twitter_description %}Solicite certidao de imovel online com atendimento digital, acompanhamento do pedido e suporte para documentos registrais em todo o Brasil.{% endblock %}
+{% block title %}Certidãobr | Certidões de imóveis online{% endblock %}
+{% block meta_description %}Solicite certidão de imóvel online com atendimento digital, acompanhamento do pedido e suporte para documentos registrais em todo o Brasil.{% endblock %}
+{% block og_title %}Certidãobr | Certidões de imóveis online{% endblock %}
+{% block og_description %}Solicite certidão de imóvel online com atendimento digital, acompanhamento do pedido e suporte para documentos registrais em todo o Brasil.{% endblock %}
+{% block twitter_title %}Certidãobr | Certidões de imóveis online{% endblock %}
+{% block twitter_description %}Solicite certidão de imóvel online com atendimento digital, acompanhamento do pedido e suporte para documentos registrais em todo o Brasil.{% endblock %}
 {% block structured_data %}
 {{ block.super }}
 <script type="application/ld+json">
@@ -15,8 +15,8 @@
     {
       "@type": "Service",
       "@id": "{{ site_url }}/#certidao-imovel",
-      "name": "Solicitacao de certidao de imovel online",
-      "description": "Atendimento digital para solicitacao e acompanhamento de certidoes de imoveis e documentos registrais.",
+      "name": "Solicitação de certidão de imóvel online",
+      "description": "Atendimento digital para solicitação e acompanhamento de certidões de imóveis e documentos registrais.",
       "provider": {
         "@id": "{{ site_url }}/#organization"
       },
@@ -24,7 +24,7 @@
         "@type": "Country",
         "name": "Brasil"
       },
-      "serviceType": "Certidoes e documentos registrais",
+      "serviceType": "Certidões e documentos registrais",
       "url": "{{ site_url }}/"
     },
     {
@@ -34,7 +34,7 @@
         {
           "@type": "ListItem",
           "position": 1,
-          "name": "Inicio",
+          "name": "Início",
           "item": "{{ site_url }}/"
         }
       ]
@@ -54,7 +54,9 @@
     <div class="cats-desktop d-none d-md-flex">
       <span class="nav-label">Categorias</span>
       <button class="tab-btn active" onclick="setTab(this,'todos')">Todos</button>
-      <button class="tab-btn" onclick="setTab(this,'imoveis')">Imóveis</button>
+      {% for service in service_pages %}
+      <button class="tab-btn" onclick="setTab(this,'{{ service.slug }}')">{{ service.short_title }}</button>
+      {% endfor %}
     </div>
 
     <!-- Mobile: dropdown -->
@@ -72,8 +74,9 @@
         <ul class="dropdown-menu w-100">
           <li><button class="dropdown-item active" onclick="setTabMobile(this,'todos','Todos os serviços')">Todos os
               serviços</button></li>
-          <li><button class="dropdown-item" onclick="setTabMobile(this,'imoveis','Imóveis')">Imóveis</button>
-          </li>
+          {% for service in service_pages %}
+          <li><button class="dropdown-item" onclick="setTabMobile(this,'{{ service.slug }}','{{ service.short_title }}')">{{ service.short_title }}</button></li>
+          {% endfor %}
         </ul>
       </div>
     </div>
@@ -93,12 +96,20 @@
     <div class="service-list" id="serviceList"></div>
 
     <section class="seo-summary" aria-labelledby="seo-summary-title">
-      <h2 id="seo-summary-title">Solicitacao de certidoes com atendimento digital</h2>
+      <h2 id="seo-summary-title">Solicitação de certidões com atendimento digital</h2>
       <p>
-        A CertidaoBR facilita a solicitacao de certidoes e documentos registrais, com fluxo online,
-        atendimento em portugues e acompanhamento do pedido. O objetivo e tornar a busca por documentos
-        mais simples, mantendo orientacao clara para cada etapa.
+        A Certidãobr facilita a solicitação de certidão de imóvel online, certidão de matrícula,
+        certidão de inteiro teor, certidão de ônus do imóvel, busca por CPF/CNPJ e certidão de imóvel
+        atualizada. O objetivo é tornar a busca por documentos mais simples, mantendo orientação clara
+        para cada etapa do pedido.
       </p>
+      <div class="related-searches" aria-label="Buscas relacionadas">
+        <span>certidão de imóvel online</span>
+        <span>matrícula atualizada</span>
+        <span>ônus reais do imóvel</span>
+        <span>inteiro teor do imóvel</span>
+        <span>busca por CPF/CNPJ</span>
+      </div>
     </section>
 
   </div>
@@ -136,9 +147,14 @@
 
 <!-- ═══ DADOS DOS SERVIÇOS ═══ -->
 <div id="servicesData">
-  <div data-url="{% url 'certidao:imovel' %}" class="service-data" data-categories="todos,imoveis"
-    data-icon-id="icon-house" data-title="Certidão de Imóvel"
-    data-desc="Obtenha a certidão de matrícula de qualquer imóvel no Brasil."></div>
+  {% for service in service_pages %}
+  <div class="service-data"
+    data-url="{% url 'certidao_service' service.slug %}"
+    data-categories="todos,{{ service.slug }}"
+    data-icon-id="icon-house"
+    data-title="{{ service.title }}"
+    data-desc="{{ service.description }}"></div>
+  {% endfor %}
 </div>
 
 <!-- ═══ SVG SPRITES ═══ -->

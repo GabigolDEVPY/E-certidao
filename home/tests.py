@@ -41,6 +41,18 @@ class SeoMetadataTests(TestCase):
         self.assertContains(response, 'application/ld+json')
         self.assertContains(response, 'favicon-48x48.png')
 
+    def test_home_links_to_blog_and_faq(self):
+        response = self.client.get(reverse('home'))
+
+        self.assertContains(response, reverse('blog_list'))
+        self.assertContains(response, reverse('faq'))
+
+    def test_home_contains_hidden_keyword_cluster(self):
+        response = self.client.get(reverse('home'))
+
+        self.assertContains(response, 'certidão de imóvel')
+        self.assertContains(response, 'emitir certidão de imóvel')
+
     def test_robots_txt_points_to_sitemap_and_blocks_technical_paths(self):
         response = self.client.get(reverse('robots_txt'))
 
