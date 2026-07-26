@@ -9,7 +9,6 @@
   <meta name="application-name" content="{{ site_name }}">
   <meta name="robots" content="{% block robots %}index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1{% endblock %}">
   <meta name="description" content="{% block meta_description %}Solicite certidões online com atendimento seguro, simples e acompanhamento do pedido em todo o Brasil.{% endblock %}">
-  <meta name="keywords" content="{% block meta_keywords %}{% if keyword_cluster %}{{ keyword_cluster|join:', ' }}{% endif %}{% endblock %}">
   <link rel="canonical" href="{{ site_url }}{{ request.path }}">
   <title>{% block title %}{{ site_name }} | Certidões online{% endblock %}</title>
 
@@ -82,11 +81,6 @@
 </head>
 
 <body class="d-flex flex-column min-vh-100">
-  {% if keyword_cluster %}
-  <div class="visually-hidden" aria-hidden="true">
-    {% for keyword in keyword_cluster %}{{ keyword }}{% if not forloop.last %}, {% endif %}{% endfor %}
-  </div>
-  {% endif %}
   {% include 'navbar.html' %}
   <main class="flex-grow-1">
     {% block content %}{% endblock %}

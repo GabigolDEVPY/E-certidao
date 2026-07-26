@@ -7,7 +7,7 @@ from django.contrib import messages
 
 from .forms import ContactMessageForm
 from .models import BlogPost, FAQItem
-from .seo_content import CERTIDAO_SERVICE_PAGES, KEYWORD_CLUSTER, get_service_page
+from .seo_content import CERTIDAO_SERVICE_PAGES, get_service_page
 
 
 # Create your views here.
@@ -15,7 +15,6 @@ class HomeView(View):
     def get(self, request):
         context = {
             'service_pages': CERTIDAO_SERVICE_PAGES,
-            'keyword_cluster': KEYWORD_CLUSTER,
         }
         return render(request, 'index.html', context)
 
@@ -38,7 +37,6 @@ class BlogListView(View):
             'posts': posts,
             'query': query,
             'service_pages': CERTIDAO_SERVICE_PAGES,
-            'keyword_cluster': KEYWORD_CLUSTER,
         })
 
 
@@ -61,7 +59,6 @@ class BlogDetailView(View):
             'post': post,
             'related_posts': related_posts,
             'related_faqs': related_faqs,
-            'keyword_cluster': KEYWORD_CLUSTER,
         })
 
 
@@ -83,7 +80,6 @@ class FAQView(View):
             'query': query,
             'selected_tipo': certidao_type,
             'service_pages': CERTIDAO_SERVICE_PAGES,
-            'keyword_cluster': KEYWORD_CLUSTER,
         })
 
 
@@ -112,7 +108,6 @@ class CertidaoServiceView(View):
             'service_pages': CERTIDAO_SERVICE_PAGES,
             'faqs': faqs,
             'posts': posts,
-            'keyword_cluster': KEYWORD_CLUSTER,
         })
 
 

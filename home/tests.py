@@ -47,11 +47,12 @@ class SeoMetadataTests(TestCase):
         self.assertContains(response, reverse('blog_list'))
         self.assertContains(response, reverse('faq'))
 
-    def test_home_contains_hidden_keyword_cluster(self):
+    def test_home_does_not_render_hidden_keyword_cluster(self):
         response = self.client.get(reverse('home'))
 
-        self.assertContains(response, 'certidão de imóvel')
-        self.assertContains(response, 'emitir certidão de imóvel')
+        self.assertNotContains(response, 'name="keywords"')
+        self.assertNotContains(response, 'visually-hidden" aria-hidden="true"')
+        self.assertNotContains(response, 'emitir certidão de imóvel')
 
     def test_robots_txt_points_to_sitemap_and_blocks_technical_paths(self):
         response = self.client.get(reverse('robots_txt'))
